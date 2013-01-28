@@ -106,7 +106,7 @@ MatD& Grid2D::getMat(void)
   return(*_grid);
 }
 
-//~~~~~~~~~~~~ Private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~ PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void Grid2D::initGrid(void)
 {
   // init channel
@@ -125,7 +125,7 @@ void Grid2D::initChannel(unsigned int channel)
 
 }
 
-int Grid2D::getIndexX(const double& xValue) const
+unsigned int Grid2D::getIndexX(const double& xValue) const
 {
   if (xValue > 0) {
     double tmp = xValue + _resolution;
@@ -137,7 +137,7 @@ int Grid2D::getIndexX(const double& xValue) const
   }
 }
 
-int Grid2D::getIndexY(const double& yValue) const
+unsigned int Grid2D::getIndexY(const double& yValue) const
 {
   if (yValue > 0) {
     double tmp = yValue + _resolution;
@@ -149,6 +149,15 @@ int Grid2D::getIndexY(const double& yValue) const
   }
 }
 
+const double& Grid2D::getCoord2idxX(unsigned int x) const
+{
+  return((double(_rows/2)-x)*_resolution);
+}
+
+const double& Grid2D::getCoord2idxY(unsigned int y) const
+{
+  return((double(_cols/2)-y)*_resolution);
+}
 
 
 

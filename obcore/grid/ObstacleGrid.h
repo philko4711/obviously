@@ -58,11 +58,13 @@ public:
    * Function to return obstacles (x0,y0, x1,y1, ..)
    * @return    obstacle array with 2d coords
    */
-  double* getObstacles(void) const;
+  bool getObstacles(void);
 
   virtual unsigned char* getImageOfGrid(void);
-  double getNearestObstacle() const;
+  bool getNearestObstacle(double& x, double& y) const;
 private:
+
+  unsigned char* getObstacleMap(void);
   /**
    * @enum CHANNEL
    */

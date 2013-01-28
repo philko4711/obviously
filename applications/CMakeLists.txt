@@ -30,8 +30,8 @@ if(EXISTS /usr/include/PMDSDK)
 	INCLUDE_DIRECTORIES(/usr/include/PMDSDK)
 	LINK_DIRECTORIES(/home/christian/workspace/CamBoardNano/PMDSDK/lib)
 	MESSAGE("Found PMDSDK. Will build driver for CamBoard Nano.")
-	#ADD_EXECUTABLE(nanoStream nanoStream.cpp)
-	#TARGET_LINK_LIBRARIES(nanoStream obgraphic obdevice obcore vtkHybrid gsl gslcblas -lpmdaccess2 ${XML_LIBRARIES})
+	ADD_EXECUTABLE(nanoStream nanoStream.cpp)
+	TARGET_LINK_LIBRARIES(nanoStream obgraphic obdevice obcore vtkHybrid gsl gslcblas -lpmdaccess2 ${XML_LIBRARIES})
 	#ADD_EXECUTABLE(nanoStreamIR nanoStreamIR.cpp)
    #TARGET_LINK_LIBRARIES(nanoStreamIR obgraphic obdevice obcore v4l2 glut GL -lpmdaccess2)
 endif()
@@ -63,6 +63,7 @@ ADD_EXECUTABLE(xtionStream xtionStream.cpp)
 ADD_EXECUTABLE(obstacleView obstacleView.cpp)
 
 
+
 TARGET_LINK_LIBRARIES(obvious3D_show obgraphic obcore vtkHybrid gsl gslcblas)
 TARGET_LINK_LIBRARIES(obvious3D_map obgraphic obcore vtkHybrid gsl gslcblas)
 TARGET_LINK_LIBRARIES(kinect_perspective obgraphic obcore vtkHybrid gsl gslcblas)
@@ -87,5 +88,6 @@ TARGET_LINK_LIBRARIES(xtionStream vtkHybrid obvision obgraphic obdevice obcore g
 #TARGET_LINK_LIBRARIES(cloud2grid vtkHybrid obgraphic obcore vtkHybrid gsl gslcblas glut GL)
 TARGET_LINK_LIBRARIES(obstacleView vtkHybrid obgraphic obdevice obcore vtkHybrid gsl gslcblas glut GL flann ann OpenNI ${XML_LIBRARIES})
 
-
+ADD_EXECUTABLE(tmpSearch tmpSearch.cpp)
+TARGET_LINK_LIBRARIES(tmpSearch vtkHybrid obgraphic obdevice obcore vtkHybrid gsl gslcblas glut GL flann ann OpenNI ${XML_LIBRARIES})
 

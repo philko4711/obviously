@@ -58,25 +58,36 @@ SUCCESFUL ObstacleGrid::height2Grid(double* cloud, unsigned int size)
   return(_gGrid->gradient2Grid(dynamic_cast<MatD&>(_hGrid->getMat())));
 }
 
-double* ObstacleGrid::getObstacles() const
+bool ObstacleGrid::getObstacles()
 {
-//  if (!_pointsEstimated)
-//    getPointsInGrid();
-  double* obstacles = new double[_obstaclesInGrid];
-  return(obstacles);
+  std::cout << "1" << std::endl;
+  for(unsigned int x=0 ; x<_rows; x++) {
+    for(unsigned int y=0 ; y<_cols; y++)
+    {
+      if(_gGrid->getMat().at(x,y) >= 0.2)
+      {
+        _grid->at(x,y) = 1.0;
+      }
+      else
+        _grid->at(x,y) = 0.0;
+    }
+  }
+//  double* obstacles = new double[_obstaclesInGrid];
+//  return(obstacles);
+  return(true);
 }
 
 unsigned char* ObstacleGrid::getImageOfGrid( void)
 {
 //  _hGrid->getImageOfGrid(img);
-  return(_gGrid->getImageOfGrid());
+  return(getObstacleMap());
+  //return(_gGrid->getImageOfGrid());
 
 }
 
-double ObstacleGrid::getNearestObstacle(void) const
+bool ObstacleGrid::getNearestObstacle(double& x, double& y) const
 {
-  unsigned int x = 0;
-  unsigned int y = 0;
+  unsigned int idxX, idxY;
   // estimate maximum square calculation
   unsigned int squareMax;
   if (_cols >= _rows)
@@ -84,59 +95,83 @@ double ObstacleGrid::getNearestObstacle(void) const
   else
     squareMax = _rows/2;
 
-  for(unsigned int square = 1 ; square < squareMax ; square++ )
+  // loop for whole grid
+  for(unsigned int square = 1 ; square <= squareMax ; square++ )
   {
     enum DIRECTION {DOWN, LEFT, UP, RIGHT};
 
     unsigned int nrPerRow_Col = square * 2;
-    unsigned int nrPerSquare  = square+4 + ((square-1)*8);
-    unsigned int idxStartY    = floor(_rows/2) - (square-1);
-    unsigned int idxStartX    = floor(_cols/2) - (square-1);
+    // estimate start position
+    unsigned int idxStartY    = (_rows/2) - square;
+    unsigned int idxStartX    = (_cols/2) - square;
 
+    // loop for one square
     for(unsigned int dir = DOWN ; dir <= RIGHT ; dir++)
     {
-      unsigned int idxX, idxY;
-      if(dir == DOWN) {
-        for(unsigned int i = 0 ; i<nrPerRow_Col ; i++)
-        {
+      for(unsigned int i = 1 ; i<nrPerRow_Col ; i++)
+      {
+        if(dir == DOWN) {
           idxX = idxStartX + i;
           idxY = idxStartY;
         }
-      }
-      if(dir == LEFT) {
-        for(unsigned int i = 0 ; i<nrPerRow_Col ; i++)
-        {
+        if(dir == LEFT) {
           idxX = idxStartX + nrPerRow_Col - 1;
           idxY = idxStartY + i;
         }
-      }
-      if(dir == UP) {
-        for(unsigned int i = 0 ; i<nrPerRow_Col ; i++)
-        {
-          idxX = idxStartX + i;
+        if(dir == UP) {
+          idxX = idxStartX + nrPerRow_Col - i - 1;
           idxY = idxStartY + nrPerRow_Col - 1;
         }
-      }
-      if(dir == RIGHT) {
-        for(unsigned int i = 0 ; i<nrPerRow_Col ; i++)
-        {
-          idxX = idxStartX + nrPerRow_Col - 1;
-          idxY = idxStartY + i;
+        if(dir == RIGHT) {
+          idxX = idxStartX;
+          idxY = idxStartY + nrPerRow_Col - i;
         }
-      }
 
-      if (_gGrid->getMat().at(idxX,idxY) != 0.0)
-      {
-        x = 2.0;//idxX;
-        y = 1.0; //idxY;
-        std::cout << "found" << std::endl;
-        return(x);
-        exit(0);
+        // check for obstacle
+        if (_grid->at(idxX,idxY) != 0.0)
+        {
+          x = getCoord2idxX(idxX);
+          y = getCoord2idxY(idxY);
+          return(true);
+        }
       }
     }
   }
+  // no obstacle found
+  return(false);
 }
 
+unsigned char* ObstacleGrid::getObstacleMap(void)
+{
+  MatD *obstacles = new MatD(_rows, _cols);
+
+  unsigned char minValue = 255;
+  unsigned char maxValue = 0;
+
+  // estimate min max value für maximum color range
+  for(unsigned int x=0 ; x<_cols ; x++) {
+    for(unsigned int y=0 ; y<_rows ; y++)
+    {
+      if(obstacles->at(x,y) > maxValue)
+        maxValue = obstacles->at(x,y);
+      if(obstacles->at(x,y) < minValue)
+        minValue = obstacles->at(x,y);
+    }
+  }
+
+  // checkout data from grid to image
+  for(unsigned int x=0 ; x<_cols ; x++)
+    for(unsigned int y=0 ; y<_rows ; y++)
+    {
+      if(_grid->at(x,y) == 1.0)
+        _img[x*_rows + y] = 255; //(obstacles->at(x,y) - minValue)/range*255;
+      else
+        _img[x*_rows + y] = 0;
+    }
+
+  delete obstacles;
+  return(_img);
+}
 
 
 

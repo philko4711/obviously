@@ -46,22 +46,37 @@ public:
    * @return        TRUE if no error occurs @see SUCCESFUL
    */
   SUCCESFUL height2Grid(double* cloud, unsigned int size);
-//  /**
-//   * Function to fit cloud in grid
-//   * @param[in]     cloud   cloud with points in double array
-//   * @param[in]     size    number of points in cloud
-//   * @param[in]     normals normals to save to grid (height, gradient, ..)
-//   * @return        TRUE if no error occurs @see SUCCESFUL
-//   */
-//  SUCCESFUL normals2Grid(double* cloud, unsigned int size, double* normals);
   /**
-   * Function to return obstacles (x0,y0, x1,y1, ..)
-   * @return    obstacle array with 2d coords
+   * Function to return estimate obstacles out of grids
+   * @return    true if everything went allright
    */
   bool getObstacles(void);
-
+  /**
+   * Function to return image of grid
+   */
   virtual unsigned char* getImageOfGrid(void);
+  /**
+   * Function to return nearest obstacle to center
+   * @param     x   coordinate for x in meters
+   * @param     y   coordinate for y in meters
+   * @return    TRUE if obstacle found
+   */
   bool getNearestObstacle(double& x, double& y) const;
+  /**
+   * Function to set threshold for heigth grid
+   * @param[in]   heightTH    threshold in meters for height grid
+   */
+  void setThresholdStepHeight(const double& heightTH) { _heightTH = heightTH; }
+  /**
+   * Function to set threshold for gradient grid
+   * @param[in]   gradientTH  theshold in rad for gradient grid
+   */
+  void setThresholdGradient(const double& gradientTH) { _gradientTH = gradientTH; }
+  /**
+   * Function to set threshold for roughness grid
+   * @param[in]   roughTH     @todo has to be defined
+   */
+  void setThresholdRough(const double& roughTH)       { _roughTH  = roughTH; }
 private:
 
   unsigned char* getObstacleMap(void);
@@ -79,8 +94,10 @@ private:
 
   HeightGrid*           _hGrid;
   GradientGrid*         _gGrid;
-  unsigned int        _obstaclesInGrid;      //!< number of obstacles in grid
-  double               _heightTH;             //!<threshold for height in image
+  unsigned int          _obstaclesInGrid;       //!< number of obstacles in grid
+  double                _heightTH;              //!< threshold for step height map
+  double                _gradientTH;            //!< threshold for gradient map
+  double                _roughTH;               //!< threshold for roughtness
 };
 } // namespace
 

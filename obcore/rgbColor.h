@@ -23,6 +23,15 @@ namespace obvious
 class RGBColor
 {
 	public:
+    /**
+     * @enum PixelEnum
+     * Enum to specify which color channel should be used
+     */
+    enum PixelEnum {
+      RED,  //!< RED
+      GREEN,//!< GREEN
+      BLUE  //!< BLUE
+    };
 		/*
 		 * Constructor
 		 */
@@ -75,6 +84,18 @@ class RGBColor
 		 * @return		blue color value
 		 */
 		unsigned char b(void) const {return m_b; }
+
+    unsigned char& operator[](int idx) {
+      if (idx == RED) {
+        return m_r;
+      }
+      else if (idx == GREEN) {
+        return m_g;
+      }
+      else if (idx == BLUE) {
+        return m_b;
+      }
+    }
 
 		/*---------------------------------------------------------------------
 		 * Function OVERLOAD

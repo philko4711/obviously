@@ -26,7 +26,7 @@ Grid2D::Grid2D(const double resolution, const double length,
   _cols            = floor((_length / _resolution) + _resolution);
   _grid            = new MatD(_rows, _cols, channels);
   _pointsEstimated = false;
-  _img             = new unsigned char[_cols*_rows];
+  _img             = new unsigned char[_cols*_rows*3];
 }
 
 /*

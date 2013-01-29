@@ -11,6 +11,8 @@
 #include <math.h>
 #include "obcore/Point.h"
 #include "obcore/Point3D.h"
+#include "obcore/base/RGBImage.h"
+#include "obcore/rgbColor.h"
 
 using namespace obvious;
 
@@ -29,28 +31,6 @@ ObstacleGrid::~ObstacleGrid()
   delete _gGrid;
 }
 
-//SUCCESFUL ObstacleGrid::normals2Grid(double* cloud, unsigned int size, double* normals)
-//{
-//  for(unsigned int i=0; i<size ; i+=3)
-//  {
-//    // gets indices of grid for point
-//    unsigned int x = getIndexX(cloud[i+X]);
-//    unsigned int y = getIndexY(cloud[i+Y]);
-//
-//    // check if points are in frontiers of grid
-//    if (x<_cols && y<_rows) {
-//      // check if new height value is bigger than saved
-//      if (_grid->at(x,y,GRADIENT_X) < fabs(normals[i+GRADIENT_X]))
-//        _grid->at(x,y,GRADIENT_X) = normals[i+GRADIENT_X];
-//
-//      if (_grid->at(x,y,GRADIENT_Y) < fabs(normals[i+GRADIENT_Y]))
-//        _grid->at(x,y,GRADIENT_Y) = normals[i+GRADIENT_Y];
-//    }
-//  }
-//  _pointsEstimated = false;
-//  return(ALRIGHT);
-//}
-
 SUCCESFUL ObstacleGrid::height2Grid(double* cloud, unsigned int size)
 {
   if(!_hGrid->height2Grid(cloud, size))
@@ -60,29 +40,23 @@ SUCCESFUL ObstacleGrid::height2Grid(double* cloud, unsigned int size)
 
 bool ObstacleGrid::getObstacles()
 {
-  std::cout << "1" << std::endl;
   for(unsigned int x=0 ; x<_rows; x++) {
     for(unsigned int y=0 ; y<_cols; y++)
     {
-      if(_gGrid->getMat().at(x,y) >= 0.2)
+      if(_gGrid->getMat().at(x,y) >= _gradientTH)
       {
         _grid->at(x,y) = 1.0;
       }
       else
-        _grid->at(x,y) = 0.0;
+        _grid->at(x,y) = _gGrid->getMat().at(x,y);
     }
   }
-//  double* obstacles = new double[_obstaclesInGrid];
-//  return(obstacles);
   return(true);
 }
 
 unsigned char* ObstacleGrid::getImageOfGrid( void)
 {
-//  _hGrid->getImageOfGrid(img);
   return(getObstacleMap());
-  //return(_gGrid->getImageOfGrid());
-
 }
 
 bool ObstacleGrid::getNearestObstacle(double& x, double& y) const
@@ -144,6 +118,7 @@ bool ObstacleGrid::getNearestObstacle(double& x, double& y) const
 unsigned char* ObstacleGrid::getObstacleMap(void)
 {
   MatD *obstacles = new MatD(_rows, _cols);
+  RGBImage* img = new RGBImage(_rows, _cols);
 
   unsigned char minValue = 255;
   unsigned char maxValue = 0;
@@ -158,17 +133,33 @@ unsigned char* ObstacleGrid::getObstacleMap(void)
         minValue = obstacles->at(x,y);
     }
   }
+  enum ColorEnum {RED, GREEN, BLUE};
 
   // checkout data from grid to image
   for(unsigned int x=0 ; x<_cols ; x++)
     for(unsigned int y=0 ; y<_rows ; y++)
     {
-      if(_grid->at(x,y) == 1.0)
-        _img[x*_rows + y] = 255; //(obstacles->at(x,y) - minValue)/range*255;
+      if(_grid->at(x,y) >= 1.0)
+      {
+        img->at(x,y,RED)    = 255;
+        img->at(x,y,GREEN)  = 0;
+        img->at(x,y,BLUE)   = 0;
+      }
+      else if (_grid->at(x,y) > 0.0)
+      {
+        for(unsigned int i=RED ; i<=BLUE ; i++)
+          img->at(x,y,i) = _grid->at(x,y)*255;
+      }
       else
-        _img[x*_rows + y] = 0;
+      {
+        for(unsigned int i=RED ; i<=BLUE ; i++)
+          img->at(x,y,i) = 0;
+      }
     }
 
+  _img = img->getImg();
+
+  delete img;
   delete obstacles;
   return(_img);
 }

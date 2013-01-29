@@ -24,18 +24,24 @@ int main(int argc, char* argv[])
   Xtion         *_xtion    = new Xtion(argv[1]);
   ObstacleGrid  *_G        = new ObstacleGrid(/*0.015625*/0.02, 8.0, 8.0);
   Obvious2DMap  *_viewer   = new Obvious2DMap(800, 800, "Obstacle streaming", 8.0, 8.0);
-  Image         *_img      = new Image(_G->getCols(), _G->getRows(), Image::GREY);
+  Image         *_img      = new Image(_G->getCols(), _G->getRows(), Image::COLORED);
   unsigned int size      = _xtion->getRows()*_xtion->getRows();
 
   //_viewer->showGrid();
   _viewer->showCircle();
   _viewer->showAngles();
+
+  _G->setThresholdGradient(0.5);
+  double x, y;
   while(1)
   {
     if(_xtion->grab())
     {
       _G->height2Grid(_xtion->getCoords(), size*3);
+      _G->getObstacles();
+//      _G->getNearestObstacle(x,y);
       _img->setImg(_G->getImageOfGrid());
+//      std::cout << "Nearest Obstacle: " << x << ", " << y << std::endl;
     }
     _viewer->draw(_img->getImg(), _img->getWidth(), _img->getHeight(), _img->getType());
   }

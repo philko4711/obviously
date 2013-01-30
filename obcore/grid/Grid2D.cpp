@@ -56,6 +56,11 @@ SUCCESFUL Grid2D::cloud2Grid(const double* cloud, unsigned int size)
   return(ALRIGHT);
 }
 
+double& Grid2D::at(unsigned int col, unsigned int row)
+{
+  return(_grid->at(col,row));
+}
+
 
 unsigned int Grid2D::getCols() const
 {

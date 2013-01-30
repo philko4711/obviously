@@ -51,6 +51,13 @@ public:
    */
   SUCCESFUL cloud2Grid(const double* cloud, unsigned int size);
   /**
+   * Function to access cell in grid
+   * @param[in]     col   selected column
+   * @param[in]     row   selected row
+   * @return        reference on cell
+   */
+  double& at(unsigned int col, unsigned int row);
+  /**
    * Function to return number of rows
    * @return    rows
    */
@@ -122,14 +129,14 @@ protected:
   //!< @param   SET_COLOR         0
   static const unsigned char  SET_COLOR     = 255;
 
-  double              _resolution;            //!< resolution of grid
-  double              _width;                 //!< width of grid in meters
-  double              _length;                //!< length of grid in meters
-  unsigned int        _rows;                  //!< number of rows
-  unsigned int        _cols;                  //!< number of columns
-  bool                _pointsEstimated;       //!< true if function getPointsInGrid was called
-  MatD*               _grid;                  //!< pointer on grid
-  unsigned char*      _img;                   //!< image for visualization
+  double            _resolution;            //!< resolution of grid
+  double            _width;                 //!< width of grid in meters
+  double            _length;                //!< length of grid in meters
+  unsigned int     _rows;                  //!< number of rows
+  unsigned int     _cols;                  //!< number of columns
+  bool              _pointsEstimated;       //!< true if function getPointsInGrid was called
+  MatD*              _grid;                  //!< pointer on grid
+  unsigned char*   _img;                   //!< image for visualization
 };
 
 } // namespace

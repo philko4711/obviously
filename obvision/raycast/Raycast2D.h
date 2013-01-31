@@ -9,7 +9,7 @@
 #ifndef _RAYCAST2D_
 #define _RAYCAST2D_
 
-#include "obcore/grid/Grid2D.h"
+#include "obcore/grid/ObstacleGrid.h"
 /**
  * @namespace obvious
  */
@@ -32,9 +32,10 @@ public:
    * Function to set grid as input
    * @param[in]   grid    input grid
    */
-  void setInput(Grid2D* grid)    { _grid = grid; }
+  void setInput(ObstacleGrid* grid)    { _grid = grid; }
   /**
    * Function to estimate free space in grid
+   * @param       clear       true to clear out free space (default:=TRUE)
    */
   void estimateFreeSpace(bool clear = true);
 private:
@@ -52,8 +53,8 @@ private:
    */
   inline double castSingleRay(const double& angle);
 
-  Grid2D* _grid;
-  bool   _clearFree;
+  ObstacleGrid* _grid;
+  bool          _clearFree;
 };
 }; // namespace
 

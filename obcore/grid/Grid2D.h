@@ -51,12 +51,17 @@ public:
    */
   SUCCESFUL cloud2Grid(const double* cloud, unsigned int size);
   /**
-   * Function to access cell in grid
+   * Function to access cell in grid.
    * @param[in]     col   selected column
    * @param[in]     row   selected row
    * @return        reference on cell
+   *
+   * With this function the cells can be accessed from the origin.
+   * Index values can be positive and negative. Therefore the input is signed int
    */
-  double& at(unsigned int col, unsigned int row);
+  double& at(int x, int y);
+
+  bool idxValid(int x, int y);
   /**
    * Function to return number of rows
    * @return    rows
@@ -114,13 +119,13 @@ protected:
    * @param[in]     x index
    * @return        distance in meters for x
    */
-  const double& getCoord2idxX(unsigned int x) const;
+  double getCoord2idxX(unsigned int x) const;
   /**
    * Function to estimate coord for index y
    * @param[in]     y index
    * @return        distance in meters for y
    */
-  const double& getCoord2idxY(unsigned int y) const;
+  double getCoord2idxY(unsigned int y) const;
 
   //!< @param   INIT_DOUBLE       0.0
   static const double         INIT_DOUBLE   = 0.0;
@@ -132,11 +137,11 @@ protected:
   double            _resolution;            //!< resolution of grid
   double            _width;                 //!< width of grid in meters
   double            _length;                //!< length of grid in meters
-  unsigned int     _rows;                  //!< number of rows
-  unsigned int     _cols;                  //!< number of columns
+  unsigned int      _rows;                  //!< number of rows
+  unsigned int      _cols;                  //!< number of columns
   bool              _pointsEstimated;       //!< true if function getPointsInGrid was called
-  MatD*              _grid;                  //!< pointer on grid
-  unsigned char*   _img;                   //!< image for visualization
+  MatD*             _grid;                  //!< pointer on grid
+  unsigned char*    _img;                   //!< image for visualization
 };
 
 } // namespace

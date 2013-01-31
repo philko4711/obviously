@@ -118,7 +118,7 @@ bool ObstacleGrid::getNearestObstacle(double& x, double& y) const
 unsigned char* ObstacleGrid::getObstacleMap(void)
 {
   MatD *obstacles = new MatD(_rows, _cols);
-  RGBImage* img = new RGBImage(_rows, _cols);
+  RGBImage* img   = new RGBImage(_rows, _cols);
 
   unsigned char minValue = 255;
   unsigned char maxValue = 0;
@@ -149,6 +149,12 @@ unsigned char* ObstacleGrid::getObstacleMap(void)
       {
         for(unsigned int i=RED ; i<=BLUE ; i++)
           img->at(x,y,i) = _grid->at(x,y)*255;
+      }
+      else if (_grid->at(x,y) == -1.0)
+      {
+        img->at(x,y,RED)    = 0;
+        img->at(x,y,GREEN)  = 255;
+        img->at(x,y,BLUE)   = 0;
       }
       else
       {

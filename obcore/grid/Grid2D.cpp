@@ -27,6 +27,8 @@ Grid2D::Grid2D(const double resolution, const double length,
   _grid            = new MatD(_rows, _cols, channels);
   _pointsEstimated = false;
   _img             = new unsigned char[_cols*_rows*3];
+
+  initGrid();
 }
 
 /*
@@ -56,11 +58,20 @@ SUCCESFUL Grid2D::cloud2Grid(const double* cloud, unsigned int size)
   return(ALRIGHT);
 }
 
-double& Grid2D::at(unsigned int col, unsigned int row)
+double& Grid2D::at(int x, int y)
 {
-  return(_grid->at(col,row));
+  unsigned int idxX = (x>0) ? _cols/2-x : _cols/2-1-x;
+  unsigned int idxY = (y>0) ? _rows/2-y : _rows/2-1-y;
+  return(_grid->at(idxX,idxY));
 }
 
+bool Grid2D::idxValid(int x, int y)
+{
+  if ((_cols/2-x>=0) && (_rows/2-y>=0))
+    return(true);
+  else
+    return(false);
+}
 
 unsigned int Grid2D::getCols() const
 {
@@ -154,12 +165,12 @@ unsigned int Grid2D::getIndexY(const double& yValue) const
   }
 }
 
-const double& Grid2D::getCoord2idxX(unsigned int x) const
+double Grid2D::getCoord2idxX(unsigned int x) const
 {
   return((double(_rows/2)-x)*_resolution);
 }
 
-const double& Grid2D::getCoord2idxY(unsigned int y) const
+double Grid2D::getCoord2idxY(unsigned int y) const
 {
   return((double(_cols/2)-y)*_resolution);
 }

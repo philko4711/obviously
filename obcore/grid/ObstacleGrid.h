@@ -78,7 +78,6 @@ public:
    */
   void setThresholdRough(const double& roughTH)       { _roughTH  = roughTH; }
 private:
-
   unsigned char* getObstacleMap(void);
   /**
    * @enum CHANNEL
@@ -99,6 +98,6 @@ private:
   double                _gradientTH;            //!< threshold for gradient map
   double                _roughTH;               //!< threshold for roughtness
 };
-} // namespace
+};  // namespace
 
 #endif /* OBSTACLEGRID_H_ */

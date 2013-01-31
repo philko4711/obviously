@@ -86,8 +86,10 @@ TARGET_LINK_LIBRARIES(showCloud obgraphic obcore vtkHybrid gsl gslcblas)
 TARGET_LINK_LIBRARIES(filterTest vtkHybrid obgraphic obcore gsl gslcblas)
 TARGET_LINK_LIBRARIES(xtionStream vtkHybrid obvision obgraphic obdevice obcore glut gsl gslcblas flann ann OpenNI ${XML_LIBRARIES})
 #TARGET_LINK_LIBRARIES(cloud2grid vtkHybrid obgraphic obcore vtkHybrid gsl gslcblas glut GL)
-TARGET_LINK_LIBRARIES(obstacleView vtkHybrid obgraphic obdevice obcore vtkHybrid gsl gslcblas glut GL flann ann OpenNI ${XML_LIBRARIES})
+TARGET_LINK_LIBRARIES(obstacleView vtkHybrid obgraphic obdevice obcore vtkHybrid gsl gslcblas glut GL flann ann OpenNI ${XML_LIBRARIES} obvision)
 
 ADD_EXECUTABLE(tmpSearch tmpSearch.cpp)
 TARGET_LINK_LIBRARIES(tmpSearch vtkHybrid obgraphic obdevice obcore vtkHybrid gsl gslcblas glut GL flann ann OpenNI ${XML_LIBRARIES})
 
+ADD_EXECUTABLE(testRay testRaycast2D.cpp)
+TARGET_LINK_LIBRARIES(testRay vtkHybrid obgraphic obdevice obcore obvision vtkHybrid gsl gslcblas glut GL flann ann OpenNI ${XML_LIBRARIES})

@@ -14,6 +14,7 @@
 #include "obgraphic/Obvious2DMap.h"
 #include "obcore/grid/ObstacleGrid.h"
 #include "obcore/base/Image.h"
+#include "obvision/raycast/Raycast2D.h"
 
 using namespace std;
 using namespace obvious;
@@ -22,10 +23,11 @@ using namespace obvious;
 int main(int argc, char* argv[])
 {
   Xtion         *_xtion    = new Xtion(argv[1]);
-  ObstacleGrid  *_G        = new ObstacleGrid(/*0.015625*/0.02, 8.0, 8.0);
-  Obvious2DMap  *_viewer   = new Obvious2DMap(800, 800, "Obstacle streaming", 8.0, 8.0);
+  ObstacleGrid  *_G        = new ObstacleGrid(/*0.015625*/0.04, 4.0, 4.0);
+  Obvious2DMap  *_viewer   = new Obvious2DMap(800, 800, "Obstacle streaming", 4.0, 4.0);
   Image         *_img      = new Image(_G->getCols(), _G->getRows(), Image::COLORED);
-  unsigned int size      = _xtion->getRows()*_xtion->getRows();
+  unsigned int size       = _xtion->getRows()*_xtion->getRows();
+  Raycast2D*    RC = new Raycast2D();
 
   //_viewer->showGrid();
   _viewer->showCircle();
@@ -38,10 +40,11 @@ int main(int argc, char* argv[])
     if(_xtion->grab())
     {
       _G->height2Grid(_xtion->getCoords(), size*3);
+      RC->setInput(_G);
       _G->getObstacles();
-//      _G->getNearestObstacle(x,y);
+      RC->estimateFreeSpace(true);
+
       _img->setImg(_G->getImageOfGrid());
-//      std::cout << "Nearest Obstacle: " << x << ", " << y << std::endl;
     }
     _viewer->draw(_img->getImg(), _img->getWidth(), _img->getHeight(), _img->getType());
   }

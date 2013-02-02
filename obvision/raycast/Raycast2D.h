@@ -51,7 +51,7 @@ private:
    * @param[in]   angle       angle in radiant
    * @return      distance in meters
    */
-  inline double castSingleRay(const double& angle);
+  inline double castSingleRay(double angle);
 
   ObstacleGrid* _grid;
   bool          _clearFree;

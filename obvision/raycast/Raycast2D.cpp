@@ -21,44 +21,50 @@ Raycast2D::~Raycast2D(void)
 void Raycast2D::estimateFreeSpace(bool clear)
 {
   _clearFree = clear;
-//  castRays(-0.25, 0.25, 40);
-  castSingleRay(0.2);
+//  castSingleRay(-M_PI/16);
+  castRays(-M_PI/6, M_PI/6, M_PI/128);
 }
 
 //-------------------------- PRIVATE--------------------------------
 bool Raycast2D::castRays(const double& minAngle, const double& maxAngle, const double& step)
 {
-  unsigned int maxRay = ceil((maxAngle - minAngle) / step);
-  for(unsigned int ray=0 ; ray<maxRay ; ray++ )
+  for(double ray=minAngle ; ray<=maxAngle ; ray+=step )
   {
-    castSingleRay(minAngle + ray*step);
+    castSingleRay(ray);
   }
 
   return(true);
 }
 
-inline double Raycast2D::castSingleRay(const double& angle)
+inline double Raycast2D::castSingleRay(double angle)
 {
-  double slope    = sin(angle) / cos(angle);
+  if (angle > 0)
+    angle += 2*M_PI;
+
+
+  double slope = sin(angle) / cos(angle);
   bool up      = (angle>-0.5*M_PI || angle<0.5*M_PI);
   bool right   = (angle>0         || angle<M_PI);
 
-  float dX = up ? 1 : -1;
-  float dY = dY * slope;
+  double  dX = up ? 1 : -1;
+  double  dY = dX * slope;
 
   ///@todo implement function in grid to estimate viewing point
   unsigned int idxStartX = 1;
   unsigned int idxStartY = 1;
 
-  unsigned int x = right ? ceil(idxStartX) : floor(idxStartX);
-  unsigned int y = idxStartY + (x-idxStartX) * slope;
+  int wallX = 1;
+  int wallY = 1;
+
+  double x = right ? ceil(idxStartX) : floor(idxStartX);
+  double y = idxStartY + (x-idxStartX) * slope;
 
   std::cout << "test" << std::endl;
 
-  while(_grid->idxValid(x,y))
+  while(_grid->idxValid(wallX,wallY))
   {
-    int wallX = floor(x + (right ? 0 : -1));
-    int wallY = floor(y);
+    wallX = floor(x + (right ? 0 : -1));
+    wallY = floor(y);
 
     std::cout << "x: " << wallX << ", y: " << wallY << std::endl;
     // check if cell is declared as obstacle

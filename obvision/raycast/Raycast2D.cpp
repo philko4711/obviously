@@ -21,68 +21,64 @@ Raycast2D::~Raycast2D(void)
 void Raycast2D::estimateFreeSpace(bool clear)
 {
   _clearFree = clear;
-//  castSingleRay(-M_PI/16);
-  castRays(-M_PI/6, M_PI/6, M_PI/128);
+  castRays(-M_PI/6, M_PI/6, M_PI/512);
 }
 
 //-------------------------- PRIVATE--------------------------------
 bool Raycast2D::castRays(const double& minAngle, const double& maxAngle, const double& step)
 {
   for(double ray=minAngle ; ray<=maxAngle ; ray+=step )
-  {
     castSingleRay(ray);
-  }
-
   return(true);
 }
 
 inline double Raycast2D::castSingleRay(double angle)
 {
-  if (angle > 0)
-    angle += 2*M_PI;
-
-
   double slope = sin(angle) / cos(angle);
-  bool up      = (angle>-0.5*M_PI || angle<0.5*M_PI);
-  bool right   = (angle>0         || angle<M_PI);
-
-  double  dX = up ? 1 : -1;
-  double  dY = dX * slope;
+  bool      up = (angle>-0.5*M_PI && angle<0.5*M_PI);
+  bool   right = (angle>0         && angle<M_PI);
+  double    dX = up ? 1 : -1;
+  double    dY = -dX * slope;
 
   ///@todo implement function in grid to estimate viewing point
   unsigned int idxStartX = 1;
   unsigned int idxStartY = 1;
 
-  int wallX = 1;
-  int wallY = 1;
+  int wallX, wallY, wXold, wYold = 1;
 
-  double x = right ? ceil(idxStartX) : floor(idxStartX);
-  double y = idxStartY + (x-idxStartX) * slope;
+  double x = up ? ceil(idxStartX) : floor(idxStartX);
+  double y = right ? (idxStartY + (x-idxStartX) * slope - 1) : 0.1;
 
-  std::cout << "test" << std::endl;
-
-  while(_grid->idxValid(wallX,wallY))
+  bool diagStep;
+  while(_grid->idxValid(wallX = floor(x) + (up ? 0 : -1),
+                        wallY = right ? floor(y) : ceil(y)))
   {
-    wallX = floor(x + (right ? 0 : -1));
-    wallY = floor(y);
+    // necessary to avoid diagonal crossing
+    if(wallX != wXold && wallY != wYold)
+      diagStep = true;
+    else
+      diagStep = false;
 
-    std::cout << "x: " << wallX << ", y: " << wallY << std::endl;
-    // check if cell is declared as obstacle
-    if(_grid->at(wallX,wallY) >= 1.0)
+    // loop for diagonal crossing
+    for(unsigned int i=0 ; i<=diagStep ; i++)
     {
-      unsigned int distX = x - idxStartX;
-      unsigned int distY = y - idxStartY;
-      return(sqrt(distX*distX + distY*distY));
+      // check if cell is declared as obstacle
+      if(_grid->at(wallX-i,wallY) >= 1.0)
+      {
+        unsigned int distX = x - idxStartX;
+        unsigned int distY = y - idxStartY;
+        return(sqrt(distX*distX + distY*distY));
+      }
+      // clear out free space
+      else if(_clearFree)
+      {
+        _grid->at(wallX-i,wallY) = -1.0;  // = FREE;
+      }
     }
-    // clear out free space
-    else if(_clearFree)
-    {
-      _grid->at(wallX,wallY) = -1.0;  // = FREE;
-    }
-
+    // save old to new
+    wXold = wallX;  wYold = wallY;
     // set up next step
-    x += dX;
-    y += dY;
+    x += dX;        y += dY;
   }
   // nothing hit in this ray
   return(false);

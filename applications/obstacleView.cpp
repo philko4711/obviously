@@ -23,11 +23,11 @@ using namespace obvious;
 int main(int argc, char* argv[])
 {
   Xtion         *_xtion    = new Xtion(argv[1]);
-  ObstacleGrid  *_G        = new ObstacleGrid(/*0.015625*/0.04, 4.0, 4.0);
-  Obvious2DMap  *_viewer   = new Obvious2DMap(800, 800, "Obstacle streaming", 4.0, 4.0);
+  ObstacleGrid  *_G        = new ObstacleGrid(/*0.015625*/0.04, 8.0, 8.0);
+  Obvious2DMap  *_viewer   = new Obvious2DMap(800, 800, "Obstacle streaming", 8.0, 8.0);
   Image         *_img      = new Image(_G->getCols(), _G->getRows(), Image::COLORED);
   unsigned int size       = _xtion->getRows()*_xtion->getRows();
-  Raycast2D*    RC = new Raycast2D();
+  Raycast2D*    RC          = new Raycast2D();
 
   //_viewer->showGrid();
   _viewer->showCircle();

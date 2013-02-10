@@ -67,8 +67,10 @@ double& Grid2D::at(int x, int y)
 
 bool Grid2D::idxValid(int x, int y)
 {
-  if ((_cols/2-x>=0) && (_rows/2-y>=0))
-    return(true);
+  if(x>-(int)_cols/2 && x<_cols/2 && x!=0) {
+    if(y>-(int)_rows/2 && y<_rows/2 && x!= 0)
+      return(true);
+  }
   else
     return(false);
 }

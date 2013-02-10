@@ -20,7 +20,9 @@ ObstacleGrid::ObstacleGrid(double resolution, double length, double width)
 : Grid2D(resolution, length, width, 4),
   _obstaclesInGrid(0)
 {
-  _heightTH = 1.0;
+  _heightTH   = 1.0;
+  _roughTH    = 1.0;
+  _gradientTH = 1.0;
   _hGrid = new HeightGrid(resolution, length, width);
   _gGrid = new GradientGrid(resolution, length, width);
 }
@@ -155,7 +157,7 @@ unsigned char* ObstacleGrid::getObstacleMap(void)
         img->at(x,y,RED)    = 0;
         img->at(x,y,GREEN)  = 255;
         img->at(x,y,BLUE)   = 0;
-      }
+        }
       else
       {
         for(unsigned int i=RED ; i<=BLUE ; i++)

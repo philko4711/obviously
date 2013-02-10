@@ -60,7 +60,12 @@ public:
    * Index values can be positive and negative. Therefore the input is signed int
    */
   double& at(int x, int y);
-
+  /**
+   * Function to check if index is valid
+   * @param         x   x index
+   * @param         y   y index
+   * @return        TRUE if index is valid
+   */
   bool idxValid(int x, int y);
   /**
    * Function to return number of rows

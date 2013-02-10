@@ -40,12 +40,20 @@ public:
    */
   virtual ~ObstacleGrid(void);
   /**
+   * Function to set normals to obstacle grid
+   * @param[in]     coords  points in cloud in xyz
+   * @param[in]     normals normals of cloud
+   * @param[in]     size    number of points in cloud
+   * @return        TRUE if no error occured
+   */
+  SUCCESFUL normals2Grid(double* coords, double* normals, bool* mask, unsigned int size);
+  /**
    * Function to get height map
-   * @param[in]     cloud   cloud with points in double array
+   * @param[in]     coords  points in cloud in xyz
    * @param[in]     size    number of points in cloud
    * @return        TRUE if no error occurs @see SUCCESFUL
    */
-  SUCCESFUL height2Grid(double* cloud, unsigned int size);
+  SUCCESFUL height2Grid(double* coords, unsigned int size);
   /**
    * Function to return estimate obstacles out of grids
    * @return    true if everything went allright
@@ -93,6 +101,7 @@ private:
 
   HeightGrid*           _hGrid;
   GradientGrid*         _gGrid;
+  GradientGrid*         _sGrid;
   unsigned int          _obstaclesInGrid;       //!< number of obstacles in grid
   double                _heightTH;              //!< threshold for step height map
   double                _gradientTH;            //!< threshold for gradient map

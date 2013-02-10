@@ -25,17 +25,24 @@ ObstacleGrid::ObstacleGrid(double resolution, double length, double width)
   _gradientTH = 1.0;
   _hGrid = new HeightGrid(resolution, length, width);
   _gGrid = new GradientGrid(resolution, length, width);
+  _sGrid = new GradientGrid(resolution, length, width);
 }
 
 ObstacleGrid::~ObstacleGrid()
 {
   delete _hGrid;
   delete _gGrid;
+  delete _sGrid;
 }
 
-SUCCESFUL ObstacleGrid::height2Grid(double* cloud, unsigned int size)
+SUCCESFUL ObstacleGrid::normals2Grid(double* coords, double* normals, bool* mask, unsigned int size)
 {
-  if(!_hGrid->height2Grid(cloud, size))
+  return(ALRIGHT);
+}
+
+SUCCESFUL ObstacleGrid::height2Grid(double* coords, unsigned int size)
+{
+  if(!_hGrid->height2Grid(coords, size))
     return(ERROR);
   return(_gGrid->gradient2Grid(dynamic_cast<MatD&>(_hGrid->getMat())));
 }
@@ -141,27 +148,30 @@ unsigned char* ObstacleGrid::getObstacleMap(void)
   for(unsigned int x=0 ; x<_cols ; x++)
     for(unsigned int y=0 ; y<_rows ; y++)
     {
+      // obstacles
       if(_grid->at(x,y) >= 1.0)
       {
         img->at(x,y,RED)    = 255;
         img->at(x,y,GREEN)  = 0;
         img->at(x,y,BLUE)   = 0;
       }
+      // terrain
       else if (_grid->at(x,y) > 0.0)
       {
         for(unsigned int i=RED ; i<=BLUE ; i++)
-          img->at(x,y,i) = _grid->at(x,y)*255;
+          img->at(x,y,i) = 255*(1-_grid->at(x,y));
       }
+      // no obstacles
       else if (_grid->at(x,y) == -1.0)
       {
-        img->at(x,y,RED)    = 0;
-        img->at(x,y,GREEN)  = 255;
-        img->at(x,y,BLUE)   = 0;
-        }
+        for(unsigned int i=RED ; i<=BLUE ; i++)
+          img->at(x,y,i) = 255;
+      }
+      // unknown
       else
       {
         for(unsigned int i=RED ; i<=BLUE ; i++)
-          img->at(x,y,i) = 0;
+          img->at(x,y,i) = 180;
       }
     }
 

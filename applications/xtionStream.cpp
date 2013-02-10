@@ -46,6 +46,7 @@ int main(int argc, char* argv[])
   _viewer     = new Obvious3D("Xtion Stream 3D", 1024, 768, 0, 0);
 
   _viewer->addCloud(_cloud);
+  _viewer->showAxes(true);
 
   vtkSmartPointer<vtkTimerCallback> cb =  vtkSmartPointer<vtkTimerCallback>::New();
   vtkSmartPointer<vtkRenderWindowInteractor> interactor = _viewer->getWindowInteractor();

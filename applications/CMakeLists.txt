@@ -92,10 +92,3 @@ TARGET_LINK_LIBRARIES(filterTest ${GRAPHICLIBS} ${CORELIBS})
 TARGET_LINK_LIBRARIES(xtionStream ${VISIONLIBS} ${GRAPHICLIBS} ${DEVICELIBS} ${CORELIBS} ${XML_LIBRARIES})
 #TARGET_LINK_LIBRARIES(cloud2grid ${GRAPHICLIBS} ${CORELIBS})
 TARGET_LINK_LIBRARIES(obstacleView ${GRAPHICLIBS} ${DEVICELIBS} ${CORELIBS} ${VISIONLIBS} ${XML_LIBRARIES})
-
-
-ADD_EXECUTABLE(tmpSearch tmpSearch.cpp)
-TARGET_LINK_LIBRARIES(tmpSearch vtkHybrid obgraphic obdevice obcore vtkHybrid gsl gslcblas glut GL flann ann OpenNI ${XML_LIBRARIES})
-
-ADD_EXECUTABLE(testRay testRaycast2D.cpp)
-TARGET_LINK_LIBRARIES(testRay vtkHybrid obgraphic obdevice obcore obvision vtkHybrid gsl gslcblas glut GL flann ann OpenNI ${XML_LIBRARIES})

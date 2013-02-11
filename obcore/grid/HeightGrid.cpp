@@ -11,20 +11,25 @@
 
 using namespace obvious;
 
-SUCCESFUL HeightGrid::height2Grid(double* cloud, unsigned int size)
+SUCCESFUL HeightGrid::height2Grid(double* cloud, bool* mask, unsigned int size)
 {
   initGrid();
-  for(unsigned int i=0; i<size ; i+=3)
+  unsigned int j=0;
+  for(unsigned int i=0; i<size ; i+=3,j++)
   {
-    // gets indices of grid for point
-    unsigned int x = getIndexX(cloud[i+Z]);
-    unsigned int y = getIndexY(cloud[i+X]);
+    //check if point is valid
+    if(mask[j] == true)
+    {
+      // gets indices of grid for point
+      unsigned int x = getIndexX(cloud[i+Z]);
+      unsigned int y = getIndexY(cloud[i+X]);
 
-    // check if points are in frontiers of grid
-    if (x<_cols && y<_rows) {
-      // check if new height value is bigger than saved
-      if (_grid->at(x,y,0) < cloud[i+Y])
-        _grid->at(x,y,0) = cloud[i+Y];
+      // check if points are in frontiers of grid
+      if (x<_cols && y<_rows) {
+        // check if new height value is bigger than saved
+        if (_grid->at(x,y,0) < cloud[i+Y])
+          _grid->at(x,y,0) = cloud[i+Y];
+      }
     }
   }
   _pointsEstimated = false;

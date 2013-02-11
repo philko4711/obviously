@@ -53,7 +53,7 @@ public:
    * @param[in]     size    number of points in cloud
    * @return        TRUE if no error occurs @see SUCCESFUL
    */
-  SUCCESFUL height2Grid(double* coords, unsigned int size);
+  SUCCESFUL height2Grid(double* coords, bool* mask, unsigned int size);
   /**
    * Function to return estimate obstacles out of grids
    * @return    true if everything went allright
@@ -74,17 +74,21 @@ public:
    * Function to set threshold for heigth grid
    * @param[in]   heightTH    threshold in meters for height grid
    */
-  void setThresholdStepHeight(const double& heightTH) { _heightTH = heightTH; }
+  void setCriticalStepHeight(const double& critical) { _hCrit = critical; }
   /**
    * Function to set threshold for gradient grid
    * @param[in]   gradientTH  theshold in rad for gradient grid
    */
-  void setThresholdGradient(const double& gradientTH) { _gradientTH = gradientTH; }
+  void setCriticalSlope(const double& critical)       { _sCrit = critical; }
   /**
    * Function to set threshold for roughness grid
    * @param[in]   roughTH     @todo has to be defined
    */
-  void setThresholdRough(const double& roughTH)       { _roughTH  = roughTH; }
+  void setCriticalRough(const double& critical)       { _rCrit  = critical; }
+
+  void setWeightStepHeight(const double& weight)      { _hWeight = weight; }
+  void setWeightSlope(const double& weight)           { _sWeight = weight; }
+  void setWeightRough(const double& weight)           { _rWeight = weight; }
 private:
   unsigned char* getObstacleMap(void);
   /**
@@ -103,9 +107,13 @@ private:
   GradientGrid*         _gGrid;
   GradientGrid*         _sGrid;
   unsigned int          _obstaclesInGrid;       //!< number of obstacles in grid
-  double                _heightTH;              //!< threshold for step height map
-  double                _gradientTH;            //!< threshold for gradient map
-  double                _roughTH;               //!< threshold for roughtness
+  double                _hCrit;                 //!< threshold for step height map
+  double                _sCrit;                 //!< threshold for gradient map
+  double                _rCrit;
+
+  double                _hWeight;
+  double                _sWeight;
+  double                _rWeight;
 };
 };  // namespace
 

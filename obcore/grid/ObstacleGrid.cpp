@@ -20,9 +20,10 @@ ObstacleGrid::ObstacleGrid(double resolution, double length, double width)
 : Grid2D(resolution, length, width, 4),
   _obstaclesInGrid(0)
 {
-  _heightTH   = 1.0;
-  _roughTH    = 1.0;
-  _gradientTH = 1.0;
+  _hCrit   = 1.0;
+  _sCrit   = 1.0;
+  _rCrit   = 1.0;
+
   _hGrid = new HeightGrid(resolution, length, width);
   _gGrid = new GradientGrid(resolution, length, width);
   _sGrid = new GradientGrid(resolution, length, width);
@@ -37,12 +38,12 @@ ObstacleGrid::~ObstacleGrid()
 
 SUCCESFUL ObstacleGrid::normals2Grid(double* coords, double* normals, bool* mask, unsigned int size)
 {
-  return(ALRIGHT);
+  return(_sGrid->gradient2Grid(coords, normals, mask, size));
 }
 
-SUCCESFUL ObstacleGrid::height2Grid(double* coords, unsigned int size)
+SUCCESFUL ObstacleGrid::height2Grid(double* coords, bool* mask, unsigned int size)
 {
-  if(!_hGrid->height2Grid(coords, size))
+  if(!_hGrid->height2Grid(coords, mask, size))
     return(ERROR);
   return(_gGrid->gradient2Grid(dynamic_cast<MatD&>(_hGrid->getMat())));
 }
@@ -52,7 +53,8 @@ bool ObstacleGrid::getObstacles()
   for(unsigned int x=0 ; x<_rows; x++) {
     for(unsigned int y=0 ; y<_cols; y++)
     {
-      if(_gGrid->getMat().at(x,y) >= _gradientTH)
+//      if(_gGrid->getMat().at(x,y) >= _heightTH || _sGrid->getMat().at(x,y) >= _slopeTH)
+      if(_gGrid->getMat().at(x,y)/_hCrit*_hWeight + _sGrid->getMat().at(x,y)/_sCrit * _sWeight >= 1.0)
       {
         _grid->at(x,y) = 1.0;
       }

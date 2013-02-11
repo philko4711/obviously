@@ -7,6 +7,7 @@
 */
 
 #include "obcore/grid/GradientGrid.h"
+#include "obcore/Axis.h"
 #include "obcore/math/mathbase.h"
 
 using namespace obvious;
@@ -14,17 +15,27 @@ using namespace obvious;
 SUCCESFUL GradientGrid::gradient2Grid(double* coords, double* normals, bool* mask, unsigned int size)
 {
   initGrid();
-  for(unsigned int i=0; i<size ; i+=3)
+  unsigned int j=0;
+  for(unsigned int i=0; i<size ; i+=3,j++)
   {
-    // gets indices of grid for point
-    unsigned int x = getIndexX(coords[i+Z]);
-    unsigned int y = getIndexY(coords[i+X]);
+    //check if normal is valid
+    if(mask[j] == true)
+    {
+      if(coords[i+Z] > 0.9)
+      {
+        // gets indices of grid for point
+        unsigned int x = getIndexX(coords[i+Z]);
+        unsigned int y = getIndexY(coords[i+X]);
 
-    // check if points are in frontiers of grid
-    if (x<_cols && y<_rows) {
-      // check if new height value is bigger than saved
-      if (_grid->at(x,y,0) < cloud[i+Y])
-        _grid->at(x,y,0) = fabs(normals[i]); // also schau ma doch a mal ob das net irgendwie über trigonomie lösbar is, vielleicht atan2 oder so
+        // check if points are in frontiers of grid
+        if (x<_cols && y<_rows) {
+          // check if new height value is bigger than saved
+          double angle = fabs(acos(normals[i+Y]));
+          if (_grid->at(x,y,0) < angle)
+            _grid->at(x,y,0) = angle;
+        }
+      }
+    }
   }
   return(ALRIGHT);
 }

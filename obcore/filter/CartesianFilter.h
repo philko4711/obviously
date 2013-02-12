@@ -10,6 +10,7 @@
 #define CARTESIANFILTER_H_
 
 #include "obcore/filter/FilterDistance.h"
+#include "obcore/filter/Filter.h"
 
 /**
  * @namespace obvious

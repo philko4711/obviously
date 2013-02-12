@@ -1,7 +1,7 @@
 /**
-* @file FilterDistance.h
-* @autor christian
-* @date  10.12.2012
+* @file   FilterDistance.h
+* @author Christian Pfitzner
+* @date   10.12.2012
 *
 *
 */

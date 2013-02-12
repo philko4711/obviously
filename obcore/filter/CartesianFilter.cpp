@@ -29,30 +29,16 @@ FILRETVAL CartesianFilter::applyFilter(void)
   for(unsigned int i=0 ; i<_size ; i++)
     _output[i]=0.0;
 
-  if (_direction == FILTER_BIGGER)
-  {
-    for(unsigned int i=_axis ; i<_size ; i+=Point3D::sizeP) {
-      if((_input[i]+_centroid[_axis]) > _threshold) {
-        dPtr += Point3D::sizeP;
-      }
-      else {
-        for(unsigned int j=0 ; j<Point3D::sizeP ; j++)
-          *_output++=*dPtr++;
-        _validSize += Point3D::sizeP;
-      }
+  for(unsigned int i=_axis ; i<_size ; i+=Point3D::sizeP) {
+    if((((_input[i]+_centroid[_axis]) > _threshold)  && (_direction == FILTER_BIGGER)) ||
+        ((_input[i]+_centroid[_axis]) <= _threshold) && (_direction == FILTER_SMALLER))
+    {
+      dPtr += Point3D::sizeP;
     }
-  }
-  else // FILTER_SMALLER
-  {
-    for(unsigned int i=_axis ; i<_size ; i+=Point3D::sizeP) {
-      if((_input[i]+_centroid[_axis]) <= _threshold) {
-        dPtr += Point3D::sizeP;
-      }
-      else {
-        for(unsigned int j=0 ; j<Point3D::sizeP ; j++)
-          *_output++=*dPtr++;
-        _validSize += Point3D::sizeP;
-      }
+    else {
+      for(unsigned int j=0 ; j<Point3D::sizeP ; j++)
+        *_output++=*dPtr++;
+      _validSize += Point3D::sizeP;
     }
   }
   return(FILTER_OK);

@@ -26,39 +26,20 @@ FILRETVAL EuclideanFilterD::applyFilter(void)
 	for(unsigned int i=0 ; i<_size ; i++)
 		_output[i]=0.0;
 
-	if (_direction == FILTER_BIGGER)
-	{
-    for(unsigned int i=0 ; i<_size ; i+=Point3D::sizeP) {
-      // new coords array for filtering with centroid
-      double coord[3] = { dPtr[i]   + _centroid[X],
-                          dPtr[i+1] + _centroid[Y],
-                          dPtr[i+2] + _centroid[Z]
-      };
-      depthVar =  euklideanDistance<double>(coord, NULL, Point3D::sizeP);
-      if(depthVar > _threshold) {
-        dPtr += Point3D::sizeP;
-      }
-      else {
-        for(unsigned int j=0 ; j<Point3D::sizeP ; j++)
-          *_output++=*dPtr++;
-        _validSize += Point3D::sizeP;
-      }
+  for(unsigned int i=0 ; i<_size ; i+=Point3D::sizeP) {
+    depthVar =  euklideanDistance<double>((double*)dPtr, NULL, Point3D::sizeP);
+    if(((depthVar >  _threshold) && (_direction == FILTER_BIGGER)) ||
+       ((depthVar <= _threshold) && (_direction == FILTER_SMALLER)))
+    {
+      dPtr += Point3D::sizeP;
     }
-	}
-	else // FILTER_SMALLER
-	{
-    for(unsigned int i=0 ; i<_size ; i+=Point3D::sizeP) {
-      depthVar =  euklideanDistance<double>((double*)dPtr, NULL, Point3D::sizeP);
-      if(depthVar <= _threshold) {
-        dPtr += Point3D::sizeP;
-      }
-      else {
-        for(unsigned int j=0 ; j<Point3D::sizeP ; j++)
-          *_output++=*dPtr++;
-        _validSize += Point3D::sizeP;
-      }
+    else
+    {
+      for(unsigned int j=0 ; j<Point3D::sizeP ; j++)
+        *_output++=*dPtr++;
+      _validSize += Point3D::sizeP;
     }
-	}
+  }
 	return(FILTER_OK);
 }
 

@@ -40,29 +40,57 @@ public:
    */
   virtual ~ObstacleGrid(void);
   /**
+   * Function to set normals to obstacle grid
+   * @param[in]     coords  points in cloud in xyz
+   * @param[in]     normals normals of cloud
+   * @param[in]     size    number of points in cloud
+   * @return        TRUE if no error occured
+   */
+  SUCCESFUL normals2Grid(double* coords, double* normals, bool* mask, unsigned int size);
+  /**
    * Function to get height map
-   * @param[in]     cloud   cloud with points in double array
+   * @param[in]     coords  points in cloud in xyz
    * @param[in]     size    number of points in cloud
    * @return        TRUE if no error occurs @see SUCCESFUL
    */
-  SUCCESFUL height2Grid(double* cloud, unsigned int size);
-//  /**
-//   * Function to fit cloud in grid
-//   * @param[in]     cloud   cloud with points in double array
-//   * @param[in]     size    number of points in cloud
-//   * @param[in]     normals normals to save to grid (height, gradient, ..)
-//   * @return        TRUE if no error occurs @see SUCCESFUL
-//   */
-//  SUCCESFUL normals2Grid(double* cloud, unsigned int size, double* normals);
+  SUCCESFUL height2Grid(double* coords, bool* mask, unsigned int size);
   /**
-   * Function to return obstacles (x0,y0, x1,y1, ..)
-   * @return    obstacle array with 2d coords
+   * Function to return estimate obstacles out of grids
+   * @return    true if everything went allright
    */
-  double* getObstacles(void) const;
-
+  bool getObstacles(void);
+  /**
+   * Function to return image of grid
+   */
   virtual unsigned char* getImageOfGrid(void);
-  double getNearestObstacle() const;
+  /**
+   * Function to return nearest obstacle to center
+   * @param     x   coordinate for x in meters
+   * @param     y   coordinate for y in meters
+   * @return    TRUE if obstacle found
+   */
+  bool getNearestObstacle(double& x, double& y) const;
+  /**
+   * Function to set threshold for heigth grid
+   * @param[in]   heightTH    threshold in meters for height grid
+   */
+  void setCriticalStepHeight(const double& critical) { _hCrit = critical; }
+  /**
+   * Function to set threshold for gradient grid
+   * @param[in]   gradientTH  theshold in rad for gradient grid
+   */
+  void setCriticalSlope(const double& critical)       { _sCrit = critical; }
+  /**
+   * Function to set threshold for roughness grid
+   * @param[in]   roughTH     @todo has to be defined
+   */
+  void setCriticalRough(const double& critical)       { _rCrit  = critical; }
+
+  void setWeightStepHeight(const double& weight)      { _hWeight = weight; }
+  void setWeightSlope(const double& weight)           { _sWeight = weight; }
+  void setWeightRough(const double& weight)           { _rWeight = weight; }
 private:
+  unsigned char* getObstacleMap(void);
   /**
    * @enum CHANNEL
    */
@@ -77,9 +105,16 @@ private:
 
   HeightGrid*           _hGrid;
   GradientGrid*         _gGrid;
-  unsigned int        _obstaclesInGrid;      //!< number of obstacles in grid
-  double               _heightTH;             //!<threshold for height in image
+  GradientGrid*         _sGrid;
+  unsigned int          _obstaclesInGrid;       //!< number of obstacles in grid
+  double                _hCrit;                 //!< threshold for step height map
+  double                _sCrit;                 //!< threshold for gradient map
+  double                _rCrit;
+
+  double                _hWeight;
+  double                _sWeight;
+  double                _rWeight;
 };
-} // namespace
+};  // namespace
 
 #endif /* OBSTACLEGRID_H_ */

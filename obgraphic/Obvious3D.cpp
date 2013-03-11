@@ -164,7 +164,7 @@ void Obvious3D::startRendering()
   _renderWindowInteractor->Start();
 }
 
-void Obvious3D::showAxes(bool show )
+void Obvious3D::showAxes(bool show)
 {
   vtkSmartPointer<vtkAxesActor> axes = vtkSmartPointer<vtkAxesActor>::New();
 	if(show)

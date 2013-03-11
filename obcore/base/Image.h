@@ -32,7 +32,9 @@ public:
    */
   Image(const unsigned int width, const unsigned int height, const enumImgType type = GREY)
     : _width(width), _height(height), _type(type)
-    { _img = new unsigned char[width*height*type]; }
+    {
+      _img = new unsigned char[width*height*type];
+    }
   /**
    * Default destructor
    */
@@ -62,11 +64,11 @@ public:
    * @return    height of image in pixels
    */
   unsigned int getHeight(void) const    { return _height; }
-private:
+protected:
   unsigned char* _img;              ///<! image in data type unsigned char*
   unsigned int   _width;            ///<! width of image in pixels
   unsigned int   _height;           ///<! height of image in pixels
-  enumImgType     _type;             ///<! type of image (grey or colored)
+  enumImgType    _type;             ///<! type of image (grey or colored)
 };
 
 } // namespace

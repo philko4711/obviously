@@ -114,6 +114,8 @@ public:
     : _direction(FILTER_BIGGER),
       _input(NULL),
       _output(NULL),
+      _maskInput(NULL),
+      _maskOutput(NULL),
       _threshold(0.0),
       _size(0),
       _validSize(0) { }
@@ -139,7 +141,12 @@ public:
    * Function to get output of filter
    * @param   addr
    */
-  void setOutput(double *addr)                 { _output    = addr; }
+  void setOutput(double* addr)                 { _output = addr; }
+  /**
+   * Function to set maks
+   * @param[in]     mask    bool array with valid or not valid (false)
+   */
+  void setMask(bool* mask)                      { _maskInput = mask; }
   /**
    * Function to change direction of filter
    * @param   direction   @see enum Direction
@@ -150,19 +157,26 @@ public:
    * Function to return valid size
    * @return  valid size of filtered points
    */
-  unsigned int getValidSize(void) const        {return _validSize; }
+  unsigned int getValidSize(void) const       { return _validSize; }
   /**
    * Function to get output address of filter
    * @return pointer on adress
    */
   double* getOutput(void) const                { return _output; }
+  /**
+   * Function to get filtered mask
+   * @return    mask      bool array with valid points
+   */
+  bool*  getMaskOutput(void) const             { return _maskOutput; }
 protected:
-  Direction       _direction;             ///< BIGGER (default) Lowpass, SMALLER for Highpass
-  double*        _input;                 ///< adress of the input buffer
-  double*        _output;                ///< adress of the output buffer
-  double         _threshold;             ///< threshold for filtering
-  unsigned int   _size;                  ///< size of both buffers
-  unsigned int   _validSize;             ///< number of valid points in data
+  Direction       _direction;             //!< BIGGER (default) Lowpass, SMALLER for Highpass
+  double*        _input;                 //!< adress of the input buffer
+  double*        _output;                //!< adress of the output buffer#
+  bool*          _maskInput;              //!< Input mask for filtering
+  bool*          _maskOutput;             //!< output mask for filtering
+  double         _threshold;              //!< threshold for filtering
+  unsigned int   _size;                   //!< size of both buffers
+  unsigned int   _validSize;              //!< number of valid points in data
 };
 
 };

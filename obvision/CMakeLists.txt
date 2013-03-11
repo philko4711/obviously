@@ -27,6 +27,7 @@ add_library(obvision
 	icp/Icp.cpp
 	normals/NormalsEstimator.cpp
 	mesh/TriangleMesh.cpp
+	raycast/Raycast2D.cpp
 	reconstruct/TsdGrid.cpp
 	reconstruct/SensorPolar2D.cpp
 	reconstruct/RayCast2D.cpp

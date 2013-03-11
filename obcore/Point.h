@@ -34,15 +34,15 @@ public:
     //! set y value
     void setY(const T& y)         { _y = y; }
     //! operator +=
-    Point& operator+=(const Point& right) { _x += right.m_x; _y += right.m_y; return *this; }
+    Point& operator+=(const Point& right) { _x += right._x; _y += right._y; return *this; }
     //! operator -=
-    Point& operator-=(const Point& right) { _x -= right.m_x; _y -= right.m_y; return *this; }
+    Point& operator-=(const Point& right) { _x -= right._x; _y -= right._y; return *this; }
     //! operator =
-    Point& operator= (const Point& right) { _x  = right.m_x; _y  = right.m_y; return *this; }
+    Point& operator= (const Point& right) { _x  = right._x; _y  = right._y; return *this; }
     //! operator +
-    Point  operator+ (const Point& right) { return Point(_x + right.m_x, _y + right.m_y);   }
+    Point  operator+ (const Point& right) { return Point(_x + right._x, _y + right._y);   }
     //! operator -
-    Point  operator- (const Point& right) { return Point(_x - right.m_x, _y - right.m_y);   }
+    Point  operator- (const Point& right) { return Point(_x - right._x, _y - right._y);   }
     /**
      * Index operator [] to return ref on member for read and write access
      * @param[in]   index     index of member @see Axis

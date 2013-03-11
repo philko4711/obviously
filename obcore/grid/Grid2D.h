@@ -51,6 +51,23 @@ public:
    */
   SUCCESFUL cloud2Grid(const double* cloud, unsigned int size);
   /**
+   * Function to access cell in grid.
+   * @param[in]     col   selected column
+   * @param[in]     row   selected row
+   * @return        reference on cell
+   *
+   * With this function the cells can be accessed from the origin.
+   * Index values can be positive and negative. Therefore the input is signed int
+   */
+  double& at(int x, int y);
+  /**
+   * Function to check if index is valid
+   * @param         x   x index
+   * @param         y   y index
+   * @return        TRUE if index is valid
+   */
+  bool idxValid(int x, int y);
+  /**
    * Function to return number of rows
    * @return    rows
    */
@@ -95,29 +112,41 @@ protected:
    * @param[in]     xValue  x value of point in cloud
    * @return        x index
    */
-  int getIndexX(const double& xValue) const;
+  unsigned int getIndexX(const double& xValue) const;
   /**
    * Function to estimate index for x in grid
    * @param[in]     yValue  y value of point in cloud
    * @return        y index
    */
-  int getIndexY(const double& yValue) const;
+  unsigned int getIndexY(const double& yValue) const;
+  /**
+   * Function to estimate coord for index x
+   * @param[in]     x index
+   * @return        distance in meters for x
+   */
+  double getCoord2idxX(unsigned int x) const;
+  /**
+   * Function to estimate coord for index y
+   * @param[in]     y index
+   * @return        distance in meters for y
+   */
+  double getCoord2idxY(unsigned int y) const;
 
   //!< @param   INIT_DOUBLE       0.0
-  static const double         INIT_DOUBLE    = 0.0;
+  static const double         INIT_DOUBLE   = 0.0;
   //!< @param   FREE_COLOR        0
-  static const unsigned char FREE_COLOR     = 0;
-  //!< @param   SET_COLOR        0
-  static const unsigned char SET_COLOR      = 255;
+  static const unsigned char  FREE_COLOR    = 0;
+  //!< @param   SET_COLOR         0
+  static const unsigned char  SET_COLOR     = 255;
 
-  double              _resolution;          //!< resolution of grid
-  double              _width;               //!< width of grid in meters
-  double              _length;              //!< length of grid in meters
-  unsigned int       _rows;                 //!< number of rows
-  unsigned int       _cols;                 //!< number of columns
-  bool                _pointsEstimated;      //!< true if function getPointsInGrid was called
-  MatD*                _grid;                //!< pointer on grid
-  unsigned char*     _img;                  //!< image for visualization
+  double            _resolution;            //!< resolution of grid
+  double            _width;                 //!< width of grid in meters
+  double            _length;                //!< length of grid in meters
+  unsigned int      _rows;                  //!< number of rows
+  unsigned int      _cols;                  //!< number of columns
+  bool              _pointsEstimated;       //!< true if function getPointsInGrid was called
+  MatD*             _grid;                  //!< pointer on grid
+  unsigned char*    _img;                   //!< image for visualization
 };
 
 } // namespace

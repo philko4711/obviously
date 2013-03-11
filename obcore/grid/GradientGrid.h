@@ -35,6 +35,7 @@ public:
    * Default destructor
    */
   virtual ~GradientGrid(void) {  }
+  SUCCESFUL gradient2Grid(double* coords, double* normals, bool* mask, unsigned int size);
   /**
    * Function to get height map
    * @param[in]     heightGrid   height grid of a cloud

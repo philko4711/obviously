@@ -43,7 +43,7 @@ public:
    * @param[in]     size    number of points in cloud
    * @return        TRUE if no error occurs @see SUCCESFUL
    */
-  SUCCESFUL height2Grid(double* cloud, unsigned int size);
+  SUCCESFUL height2Grid(double* cloud, bool* mask, unsigned int size);
   /**
    * Function to return unsigned char image for visualization
    * @param[in]     img    allocated unsigned char array

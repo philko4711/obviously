@@ -11,6 +11,7 @@
 #define SICKLMS100_H_
 
 #include "obdevice/LaserDevice.h"
+#include <LMS1xx.h>
 
 /**
  * @namespace obvious
@@ -37,6 +38,32 @@ public:
    */
   bool      grab(void);
 private:
+  inline double estimateAngularRes()      { return((_maxAngle-_minAngle)/_nrOfRays); }
+  /**
+   * Function to estimate ranges in scan
+   */
+  void estimateRanges();
+  /**
+   * Function to estimate intensities in scan
+   */
+  virtual void estimateIntensities();
+  /**
+   * Function to estimate single angles for every ray
+   */
+  virtual void estimateAngles();
+  /**
+   * Function to estimate 2D coords
+   */
+  virtual void estimateCoords2D();
+  /**
+   * Function to estimate mask
+   */
+  virtual void estimateMask();
+
+  LMS1xx      _laser;
+  scanCfg     _cfg;
+  scanDataCfg _dataCfg;
+  scanData    _data;
 
 
 };

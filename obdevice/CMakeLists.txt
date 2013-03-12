@@ -20,12 +20,19 @@ INCLUDE_DIRECTORIES(/usr/include/openni
                     ${XML_INCLUDE_DIRS}
                     )
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__OBVIOUSLY__")
+
 # check if necessary files for PMD are installed
 if(EXISTS /usr/include/PMDSDK)
-	INCLUDE_DIRECTORIES(/usr/include/PMDSDK)
-endif()
+  INCLUDE_DIRECTORIES(/usr/include/PMDSDK)
+endif() 
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__OBVIOUSLY__")
+#####################################################################
+# check if libLMS1xx for Sick laser scanner is installed
+# see https://github.com/konradb3/libLMS1xx
+if(EXISTS /usr/local/include/LMS1xx.h)
+  MESSAGE("-- Found libLMS1xx. Will build driver for Sick LMS 100.")
+endif()
 
 ADD_LIBRARY(obdevice
 	Kinect.cpp
@@ -45,4 +52,7 @@ ADD_LIBRARY(obdevice
         CameraCalibration.cpp
         KinectDevice.cpp
 #        ThermoDevice.cpp
+  SickLMS100.cpp
 	)
+	
+	

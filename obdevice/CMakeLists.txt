@@ -25,6 +25,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__OBVIOUSLY__")
 # check if necessary files for PMD are installed
 if(EXISTS /usr/include/PMDSDK)
   INCLUDE_DIRECTORIES(/usr/include/PMDSDK)
+  MESSAGE("-- Found PMD device. Will build driver for PMD.")
 endif() 
 
 #####################################################################

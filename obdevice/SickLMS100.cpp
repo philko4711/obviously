@@ -31,20 +31,14 @@ SickLMS100::SickLMS100(double minAngle, double maxAngle, unsigned int rays)
   // check if connection is established
   if (_laser.isConnected())
   {
-    LOGMSG(DBG_DEBUG, "Connection established");
-
     _laser.login();
     _cfg = _laser.getScanCfg();
-
 //    std::cout << "resolution : "  << (double)_cfg.angleResolution/10000.0 << " deg "  << std::endl;
 //    std::cout << "frequency : "   << (double)_cfg.scaningFrequency/100.0  << " Hz "   << std::endl;
-
-    if (_cfg.angleResolution == 2500)
-    {
+    if (_cfg.angleResolution == 2500) {
       _nrOfRays = 1081;
     }
-    else if (_cfg.angleResolution == 5000)
-    {
+    else if (_cfg.angleResolution == 5000) {
       _nrOfRays = 541;
     }
     else
@@ -57,6 +51,7 @@ SickLMS100::SickLMS100(double minAngle, double maxAngle, unsigned int rays)
     _intensities  = new double[_nrOfRays];
     _angles       = new double[_nrOfRays];
     _coords2D     = new double[2*_nrOfRays];
+    _coords3D     = new double[3*_nrOfRays];
     _mask         = new bool  [_nrOfRays];
 
     _dataCfg.outputChannel  = 1;
@@ -85,7 +80,10 @@ SickLMS100::SickLMS100(double minAngle, double maxAngle, unsigned int rays)
     LOGMSG(DBG_ERROR, "Connection error")
     exit(1);
   }
+  this->estimateAngularRes();
   this->estimateAngles();
+  LOGMSG(DBG_DEBUG, "Configuration completed");
+  std::cout << _angRes << std::endl;
 }
 
 SickLMS100::~SickLMS100()
@@ -100,9 +98,10 @@ bool SickLMS100::grab(void)
   if(_laser.isConnected())
   {
     _laser.getData(_data);
-
     this->estimateRanges();
     this->estimateIntensities();
+    this->estimateCoords2D();
+    this->estimateCoords3D();
   }
   else
   {
@@ -110,6 +109,11 @@ bool SickLMS100::grab(void)
   }
 
   return(true);
+}
+
+void SickLMS100::estimateAngularRes(void)
+{
+  _angRes = (_maxAngle-_minAngle)/_nrOfRays;
 }
 
 void SickLMS100::estimateRanges(void)
@@ -133,10 +137,24 @@ void SickLMS100::estimateAngles(void)
 void SickLMS100::estimateCoords2D(void)
 {
   unsigned int k = 0;
-  for(unsigned int i=0 ; i<_nrOfRays ; i++, k+=2)
+  for(unsigned int i=0 ; i<_nrOfRays ; i++)
   {
-    _coords2D[k+0] = _ranges[i] * cos(_angles[i]);
-    _coords2D[k+1] = _ranges[i] * sin(_angles[i]);
+    // std::cout << _angles[i] << std::endl;
+    _coords2D[k+0] = _ranges[i] * cos(_angles[i]*M_PI / 180);
+    _coords2D[k+1] = _ranges[i] * sin(_angles[i]*M_PI / 180);
+    k+=2;
+  }
+}
+
+void SickLMS100::estimateCoords3D(void)
+{
+  unsigned int k = 0;
+  for(unsigned int i=0 ; i<_nrOfRays ; i++)
+  {
+    _coords3D[k+0] = _ranges[i] * cos(_angles[i]*M_PI / 180);
+    _coords3D[k+1] = _ranges[i] * sin(_angles[i]*M_PI / 180);
+    _coords3D[k+2] = 1.0;
+    k+=3;
   }
 }
 

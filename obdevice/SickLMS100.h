@@ -27,7 +27,7 @@ public:
   /**
    * Standard Constructor
    */
-  SickLMS100(double minAngle, double maxAngle, unsigned int rays);
+  SickLMS100(double minAngle=-135.0, double maxAngle=135.0, unsigned int rays = 1);
   /**
    * Default Destructor
    */
@@ -36,29 +36,33 @@ public:
    * Function to grab new data
    * @return  TRUE if success
    */
-  bool      grab(void);
+  virtual bool      grab(void);
 private:
-  inline double estimateAngularRes()      { return((_maxAngle-_minAngle)/_nrOfRays); }
+  void estimateAngularRes(void);
   /**
    * Function to estimate ranges in scan
    */
-  void estimateRanges();
+  void estimateRanges(void);
   /**
    * Function to estimate intensities in scan
    */
-  virtual void estimateIntensities();
+  virtual void estimateIntensities(void);
   /**
    * Function to estimate single angles for every ray
    */
-  virtual void estimateAngles();
+  virtual void estimateAngles(void);
   /**
    * Function to estimate 2D coords
    */
-  virtual void estimateCoords2D();
+  virtual void estimateCoords2D(void);
+  /**
+   * Function to estimate 3D coords
+   */
+  virtual void estimateCoords3D(void);
   /**
    * Function to estimate mask
    */
-  virtual void estimateMask();
+  virtual void estimateMask(void);
 
   LMS1xx      _laser;
   scanCfg     _cfg;

@@ -29,7 +29,7 @@ public:
   /**
    * Default Destructor
    */
-  virtual   ~LaserDevice()
+  virtual   ~LaserDevice(void)
   {
     delete[] _ranges;
     delete[] _intensities;
@@ -40,29 +40,44 @@ public:
    * Function to grab new data
    * @return  TRUE if success
    */
-  virtual bool      grab(void) = 0;
-
+  virtual bool grab(void)           { return(true); }
+  /**
+   * Return number of rays
+   * @return  rays
+   */
   unsigned int getNumberOfRays() const { return _nrOfRays; }
   /**
    * Function to return Distances
    * @return  Distance in meters
    */
-  double*   getDistance() const    { return _ranges; }
+  double*   getDistance(void) const    { return _ranges; }
+  /**
+   * Function to return coords in 2d (x1,y1,x2,y2, ...)
+   * @return  coords2D
+   */
+  double*   getCoords2D(void) const    { return _coords2D; }
+  /**
+   * Function to return coords in 3d (x1,y1,z1, ...)
+   * @return  coords3D
+   *
+   * Please note that the paramter z1 is set to zero.
+   */
+  double*   getCoords3D(void) const     { return _coords3D; }
   /**
    * Function to return intensities
    * @return  Intensity value
    */
-  double*   getIntensity() const   { return _intensities; }
+  double*   getIntensity(void) const   { return _intensities; }
   /**
    * Function to return angles
    * @return  angles in rad
    */
-  double*   getAngle() const        { return _angles; }
+  double*   getAngle(void) const        { return _angles; }
   /**
    * Function to return mask of valid points
    * @return  mask with valid points (TRUE)
    */
-  bool*   getMask()                  { return _mask; }
+  bool*     getMask(void)                { return _mask; }
 protected:
   /**
    * Function to estimate ranges in scan
@@ -81,12 +96,18 @@ protected:
    */
   virtual void estimateCoords2D(void) { }
   /**
+   * Function to estimate 2D coords
+   */
+  virtual void estimateCoords3D(void) { }
+  /**
    * Function to estimate mask
    */
-  virtual void estimateMask();
+  virtual void estimateMask() { }
+  /*~~~~~~~~~~~~~~~~~~~~~~~~~~ Variables ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
   double*   _ranges;            //!< Distance in meters
   double*   _intensities;       //!< Intensities
   double*   _coords2D;          //!< 2D coords
+  double*   _coords3D;          //!< 3D coords
   double*   _angles;            //!< Angles in rad
   bool*     _mask;              //!< mask for valid or invalid points
   /*~~~~~~~~~~~~~~~~~~~~~~~~~~ Configuration ~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -95,10 +116,7 @@ protected:
   unsigned int      _nrOfRays;
   double            _angRes;
 
-  double estimateAngularRes(void)      { return(1.0); }//(double)(_maxAngle-_minAngle)/_nrOfRays); }
-
-
-
+  double estimateAngularRes(void)      { return((double)(_maxAngle-_minAngle)/_nrOfRays); }
 };
 
 };  //namespace

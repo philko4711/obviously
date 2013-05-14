@@ -60,6 +60,10 @@ private:
    */
   virtual void estimateCoords3D(void);
   /**
+   * Function to estimate normals
+   */
+  virtual void estimateNormals(void);
+  /**
    * Function to estimate mask
    */
   virtual void estimateMask(void);

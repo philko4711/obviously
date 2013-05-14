@@ -52,6 +52,7 @@ SickLMS100::SickLMS100(double minAngle, double maxAngle, unsigned int rays)
     _angles       = new double[_nrOfRays];
     _coords2D     = new double[2*_nrOfRays];
     _coords3D     = new double[3*_nrOfRays];
+    _normals      = new double[2*_nrOfRays];
     _mask         = new bool  [_nrOfRays];
 
     _dataCfg.outputChannel  = 1;
@@ -156,6 +157,11 @@ void SickLMS100::estimateCoords3D(void)
     _coords3D[k+2] = 1.0;
     k+=3;
   }
+}
+
+void SickLMS100::estimateNormals(void)
+{
+
 }
 
 void SickLMS100::estimateMask(void)

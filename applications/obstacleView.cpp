@@ -8,7 +8,7 @@
 
 
 
-#include "obdevice/Xtion.h"
+#include "../obdevice/Xtion.h"
 #include "obgraphic/Obvious3D.h"
 #include "obgraphic/Obvious2D.h"
 #include "obgraphic/Obvious2DMap.h"

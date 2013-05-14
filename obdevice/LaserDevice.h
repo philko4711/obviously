@@ -64,6 +64,11 @@ public:
    */
   double*   getCoords3D(void) const     { return _coords3D; }
   /**
+   * Function to return normals
+   * @return  normals in 2d vector
+   */
+  double*   getNormals(void) const        { return _normals; }
+  /**
    * Function to return intensities
    * @return  Intensity value
    */
@@ -100,6 +105,10 @@ protected:
    */
   virtual void estimateCoords3D(void) { }
   /**
+   * Function to estimate normals
+   */
+  virtual void estimateNormals(void) { }
+  /**
    * Function to estimate mask
    */
   virtual void estimateMask() { }
@@ -108,6 +117,7 @@ protected:
   double*   _intensities;       //!< Intensities
   double*   _coords2D;          //!< 2D coords
   double*   _coords3D;          //!< 3D coords
+  double*   _normals;           //!< normals
   double*   _angles;            //!< Angles in rad
   bool*     _mask;              //!< mask for valid or invalid points
   /*~~~~~~~~~~~~~~~~~~~~~~~~~~ Configuration ~~~~~~~~~~~~~~~~~~~~~~~~~*/

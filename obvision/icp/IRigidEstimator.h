@@ -53,7 +53,7 @@ class IRigidEstimator
 		virtual double getRMS() = 0;
 		
 		/**
-		 * Function to retrun the numbers of iterations
+		 * Function to return the numbers of iterations
 		 * @return number of iterations
 		 */
 		virtual unsigned int getIterations(void) = 0;
@@ -63,6 +63,8 @@ class IRigidEstimator
 		 * @param transformation matrix as return parameter 
 		 */
 		virtual void estimateTransformation(gsl_matrix* T) = 0;
+
+		virtual void getRotationTransformVec(double* rotAngles, double* translation) = 0;
 };
 
 }

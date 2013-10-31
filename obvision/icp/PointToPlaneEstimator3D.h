@@ -56,7 +56,7 @@ class PointToPlaneEstimator3D : public IRigidEstimator
 		 */
 		virtual void estimateTransformation(gsl_matrix* T);
 		
-
+		virtual void getRotationTransformVec(double* rotAngles, double* translation);
 
 	private:
 	
@@ -85,6 +85,9 @@ class PointToPlaneEstimator3D : public IRigidEstimator
      *  Index pairs
      */
     std::vector<StrCartesianIndexPair>* _pairs;
+
+    double                              _rotAngles[3];
+    double                              _translation[3];
 };
 
 }

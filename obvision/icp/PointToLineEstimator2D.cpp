@@ -141,7 +141,6 @@ void PointToLine2DEstimator::estimateTransformation(gsl_matrix* T)
   const double phi   = 0.0;
   gsl_matrix_view R = gsl_matrix_submatrix(T, 0, 0, 3, 3);
 
-
   double cph = cos(phi);
   double cth = cos(theta);
   double cps = cos(psi);
@@ -165,12 +164,29 @@ void PointToLine2DEstimator::estimateTransformation(gsl_matrix* T)
   gsl_vector_set(&t.vector, 0, gsl_vector_get(x, 1));
   gsl_vector_set(&t.vector, 1, gsl_vector_get(x, 2));
 
+  // save to member variable
+  _translation[0] = gsl_vector_get(&t.vector, 0);
+  _translation[1] = gsl_vector_get(&t.vector, 1);
+  _translation[2] = 0.0;
+  _rotAngles[0]   = phi;
+  _rotAngles[1]   = theta;
+  _rotAngles[2]   = psi;
+
   gsl_vector_free(x);
 }
 
 unsigned int PointToLine2DEstimator::getIterations(void)
 {
   return(_iterations);
+}
+
+void PointToLine2DEstimator::getRotationTransformVec(double* rotAngles, double* translation)
+{
+	for (unsigned int i=0 ; i<3 ; i++)
+	{
+    rotAngles[i]   = _rotAngles[i];
+    translation[i] = _translation[i];
+	}
 }
 
 }

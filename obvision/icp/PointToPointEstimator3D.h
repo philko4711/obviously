@@ -56,6 +56,8 @@ class PointToPointEstimator3D : public IRigidEstimator
 		 */
 		virtual void estimateTransformation(gsl_matrix* T);
 		
+	  virtual void getRotationTransformVec(double* rotAngles, double* translation);
+
 	private:
 	
 		/**
@@ -90,6 +92,8 @@ class PointToPointEstimator3D : public IRigidEstimator
 
 		unsigned int _iterations;
 
+    double                              _rotAngles[3];
+    double                              _translation[3];
 };
 
 }

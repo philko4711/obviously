@@ -50,6 +50,8 @@ public:
 
   unsigned int getIterations(void);
 
+  virtual void getRotationTransformVec(double* rotAngles, double* translation);
+
 private:
   double**                            _model;     //!< model
   double**                            _scene;     //!< scene
@@ -59,6 +61,8 @@ private:
   unsigned int                        _iterations;
   double                              _cm[3];
   double                              _cs[3];
+  double 							                _rotAngles[3];
+  double 							                _translation[3];
 };
 
 }

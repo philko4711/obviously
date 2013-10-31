@@ -176,6 +176,14 @@ void PointToPlaneEstimator3D::estimateTransformation(gsl_matrix* T)
   double sth = sin(theta);
   double sps = sin(psi);
 
+  // save to member variable
+  _translation[0] = gsl_vector_get(x, 1);
+  _translation[1] = gsl_vector_get(x, 2);
+  _translation[2] = 0.0;
+  _rotAngles[0]   = phi;
+  _rotAngles[1]   = theta;
+  _rotAngles[2]   = psi;
+
   gsl_matrix_set(&R.matrix, 0, 0, cth*cps);
   gsl_matrix_set(&R.matrix, 0, 1, -cph*sps+sph*sth*cps);
   gsl_matrix_set(&R.matrix, 0, 2, sph*sth+cph*sth*cps);
@@ -194,6 +202,15 @@ void PointToPlaneEstimator3D::estimateTransformation(gsl_matrix* T)
 unsigned int PointToPlaneEstimator3D::getIterations(void)
 {
   return(_iterations);
+}
+
+void PointToPlaneEstimator3D::getRotationTransformVec(double* rotAngles, double* translation)
+{
+  for (unsigned int i=0 ; i<3 ; i++)
+  {
+    rotAngles[i]   = _rotAngles[i];
+    translation[i] = _translation[i];
+  }
 }
 
 }

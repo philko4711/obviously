@@ -153,6 +153,15 @@ void PointToPointEstimator3D::estimateTransformation(gsl_matrix* T)
   gsl_vector_set(&t.vector, 2, _cm[2]);
   gsl_vector_sub(&t.vector, tmp);
 
+  // save to member variable
+  /*
+  _translation[0] = gsl_vector_get(t, 1);
+  _translation[1] = gsl_vector_get(t, 2);
+  _translation[2] = 0.0;
+  _rotAngles[0]   = phi;
+  _rotAngles[1]   = theta;
+  _rotAngles[2]   = psi; */
+
   gsl_vector_free(tmp);
   gsl_vector_free(col);
 
@@ -162,6 +171,15 @@ void PointToPointEstimator3D::estimateTransformation(gsl_matrix* T)
 
   System<double>::deallocate(pm);
   System<double>::deallocate(ps);
+}
+
+void PointToPointEstimator3D::getRotationTransformVec(double* rotAngles, double* translation)
+{
+  for (unsigned int i=0 ; i<3 ; i++)
+  {
+    rotAngles[i]   = _rotAngles[i];
+    translation[i] = _translation[i];
+  }
 }
 
 }

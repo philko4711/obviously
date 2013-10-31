@@ -366,4 +366,9 @@ Matrix* Icp::getLastTransformation()
   return _Tlast;
 }
 
+void Icp::getRotationTransformVec(double* rotAngles, double* translation)
+{
+  _estimator->getRotationTransformVec(rotAngles, translation);
+}
+
 }

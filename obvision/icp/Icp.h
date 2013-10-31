@@ -180,6 +180,8 @@ public:
 	 */
 	Matrix* getLastTransformation();
 	
+	void getRotationTransformVec(double* rotAngles, double* translation);
+
 private:
 	
 	void applyTransformation(double** data, unsigned int size, unsigned int dim, Matrix* T);

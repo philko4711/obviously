@@ -105,6 +105,14 @@ void ClosedFormEstimator2D::estimateTransformation(gsl_matrix* T)
   double dDeltaX = (_cm[0] - (dCosDeltaTheta * _cs[0] - dSinDeltaTheta * _cs[1]));
   double dDeltaY = (_cm[1] - (dCosDeltaTheta * _cs[1] + dSinDeltaTheta * _cs[0]));
 
+  // save to member variable
+  _translation[0] = dDeltaX;
+  _translation[1] = dDeltaY;
+  _translation[2] = 0.0;
+  _rotAngles[0]   = 0.0;
+  _rotAngles[1]   = 0.0;
+  _rotAngles[2]   = dDeltaTheta;
+
   // fill result matrix
   gsl_matrix_set_identity(T);
   gsl_matrix_set(T, 0, 0, dCosDeltaTheta);
@@ -116,6 +124,15 @@ void ClosedFormEstimator2D::estimateTransformation(gsl_matrix* T)
   gsl_matrix_set(T, 1, 3, dDeltaY);
 
   gsl_matrix_set(T, 2, 3, 0);
+}
+
+void ClosedFormEstimator2D::getRotationTransformVec(double* rotAngles, double* translation)
+{
+  for (unsigned int i=0 ; i<3 ; i++)
+  {
+    rotAngles[i]   = _rotAngles[i];
+    translation[i] = _translation[i];
+  }
 }
 
 }

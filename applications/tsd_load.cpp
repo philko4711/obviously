@@ -43,23 +43,26 @@ int main(int argc, char* argv[])
   }
 
   // init viewer
-  _viewer = new Obvious3D((char*) "TSD Space Viewer", 1024, 768, 0, 0);
+  double backcolor[3]={0.3, 0.3, 0.3};
+  _viewer = new Obvious3D((char*) "Hokuyo TSD space", 1024, 768, 0, 0, backcolor);
   vtkSmartPointer<vtkTimerCallback> cb =  vtkSmartPointer<vtkTimerCallback>::New();
   vtkSmartPointer<vtkRenderWindowInteractor> interactor = _viewer->getWindowInteractor();
   interactor->AddObserver(vtkCommand::TimerEvent, cb);
   interactor->CreateRepeatingTimer(30);
-
-  LOGMSG_CONF("tsd_test.log", Logger::file_off|Logger::screen_on, DBG_DEBUG, DBG_WARN);
 
   // configuration of space
   ///@todo set up method for tsd configuration
   double height    = 0.5;
   double width     = 0.5;
   double depth     = 0.5;
-  double voxelSize = 0.004;
+  double voxelSize = 0.001;
+//  TsdSpace* _space = new TsdSpace(argv[1]);
   TsdSpace* _space = new TsdSpace(height, width, depth, voxelSize);
 
-  // load space from file
+//  _space->getConfigFromFile(height, width, depth, voxelSize, argv[1]);
+
+  std::cout << "from file: " << height << " " << width << " " << depth << " " << voxelSize << std::endl;
+//  // load space from file
   _space->load(argv[1]);
 
   // configure raycast

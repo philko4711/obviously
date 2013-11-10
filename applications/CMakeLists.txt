@@ -11,15 +11,16 @@ SET(APPLICATIONS_VERSION_MINOR 1)
 
 FIND_PACKAGE(VTK REQUIRED)
 INCLUDE(${VTK_USE_FILE})
+
 PKG_CHECK_MODULES(XML libxml++-2.6)
 
 # if does exists find libopenni2 directories and libs
-#EXECUTE_PROCESS(COMMAND pkg-config libopenni2 --exists RESULT_VARIABLE RET_OPENNI_CODE)
-#IF("${RET_OPENNI_CODE}" STREQUAL "0")
-#    PKG_CHECK_MODULES(OPENNI libopenni2)
-#    INCLUDE_DIRECTORIES(${OPENNI_INCLUDE_DIRS})
-#    LINK_DIRECTORIES(${OPENNI_LIBRARY_DIRS})
-#ENDIF()
+EXECUTE_PROCESS(COMMAND pkg-config libopenni2 --exists RESULT_VARIABLE RET_OPENNI_CODE)
+IF("${RET_OPENNI_CODE}" STREQUAL "0")
+    PKG_CHECK_MODULES(OPENNI libopenni2)
+    INCLUDE_DIRECTORIES(${OPENNI_INCLUDE_DIRS})
+    LINK_DIRECTORIES(${OPENNI_LIBRARY_DIRS})
+ENDIF()
 
 INCLUDE_DIRECTORIES(/usr/include/openni
                     /usr/include/ni
@@ -27,6 +28,7 @@ INCLUDE_DIRECTORIES(/usr/include/openni
                     /usr/local/include/
                     /usr/include/qt4/
                     /usr/include/lua5.1
+                    /usr/include/vtk-5.8
                     /opt/ros/electric/stacks/perception_pcl/flann/include/
                     ../obcore/math
                     ../obcore/filter
@@ -96,9 +98,7 @@ ADD_EXECUTABLE(filterTest                 filter_test.cpp)
 #ADD_EXECUTABLE(cloud2grid                cloud2grid.cpp)
 ADD_EXECUTABLE(xtionStream                xtionStream.cpp)
 SET_TARGET_PROPERTIES(xtionStream PROPERTIES COMPILE_FLAGS "-Wno-unknown-pragmas -Wno-reorder")
-#ADD_EXECUTABLE(obstacleView              obstacleView.cpp)
-
-
+ADD_EXECUTABLE(tsd_fusion                 tsd_sensorFusion.cpp)
 
 TARGET_LINK_LIBRARIES(obvious3D_show           ${GRAPHICLIBS} ${CORELIBS})
 TARGET_LINK_LIBRARIES(obvious3D_map            ${GRAPHICLIBS} ${CORELIBS})
@@ -126,14 +126,16 @@ TARGET_LINK_LIBRARIES(tsd_kinect               ${VISIONLIBS}  ${DEVICELIBS}  ${G
 TARGET_LINK_LIBRARIES(tsd_raycast_visualize    ${VISIONLIBS}  ${GRAPHICLIBS} ${CORELIBS})
 TARGET_LINK_LIBRARIES(showCloud                ${GRAPHICLIBS} ${CORELIBS})
 TARGET_LINK_LIBRARIES(filterTest               ${GRAPHICLIBS} ${CORELIBS})
-TARGET_LINK_LIBRARIES(xtionStream              ${VISIONLIBS}  ${GRAPHICLIBS} ${DEVICELIBS} ${CORELIBS} ${XML_LIBRARIES})
+TARGET_LINK_LIBRARIES(xtionStream              ${VISIONLIBS}  ${GRAPHICLIBS} ${DEVICELIBS} ${CORELIBS} ${XML_LIBRARIES} ${OPENNI_LIBRARIES})
 #TARGET_LINK_LIBRARIES(cloud2grid              ${GRAPHICLIBS} ${CORELIBS})
 #TARGET_LINK_LIBRARIES(obstacleView            ${GRAPHICLIBS} ${DEVICELIBS} ${CORELIBS} ${XML_LIBRARIES})
+TARGET_LINK_LIBRARIES(tsd_fusion               ${VISIONLIBS}  ${DEVICELIBS}  ${GRAPHICLIBS} ${CORELIBS} ${XML_LIBRARIES})
 
-IF("${RET_OPENNI_CODE}" STREQUAL "0")
-    ADD_EXECUTABLE(openni-device-stream openni-device-stream.cpp)
-    TARGET_LINK_LIBRARIES(openni-device-stream ${VISIONLIBS} ${GRAPHICLIBS} ${DEVICELIBS} ${CORELIBS} ${XML_LIBRARIES} ${OPENNI_LIBRARIES})
-ENDIF()
+
+#IF("${RET_OPENNI_CODE}" STREQUAL "0")
+#    ADD_EXECUTABLE(openni-device-stream openni-device-stream.cpp)
+#    TARGET_LINK_LIBRARIES(openni-device-stream ${VISIONLIBS} ${GRAPHICLIBS} ${DEVICELIBS} ${CORELIBS} ${XML_LIBRARIES} ${OPENNI_LIBRARIES})
+#ENDIF()
 
 add_executable(integrator integrator.cpp)
 target_link_libraries(integrator ${CORELIBS}) 

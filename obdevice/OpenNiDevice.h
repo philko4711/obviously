@@ -6,8 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "obcore/math/MatRGB.h"
-
 namespace obvious {
 
 class OpenNiDevice
@@ -28,31 +26,39 @@ public:
     Flag flags(void) const { return _flags; }
     bool init(void);
     bool grab(void);
-    int width(void) const { return _width; }
-    int height(void) const { return _height; }
-    const std::vector<float>& z(void) const { return _z; }
-    const std::vector<float>& coords(void) const { return _coords; }
-    const MatRGB& image(void) const { return _flags & Color ? _imgRgb : _imgIr; }
-    const MatRGB& ir(void) const { return _imgIr; }
-    const MatRGB& rgb(void) const { return _imgRgb; }
+    unsigned int getCols(void) const    { return _width; }
+    unsigned int getRows(void) const   { return _height; }
+    double* getCoords(void) const     { return _coords; }
+    double* getZ(void) const           { return _z; }
+    unsigned char* getRGB(void) const { return _rgb; }
+    unsigned char* getIR(void) const  { return _ir_image; }
+//    const std::vector<float>& z(void) const { return _z; }
+//    const std::vector<float>& coords(void) const { return _coords; }
+//    const MatRGB& image(void) const { return _flags & Color ? _imgRgb : _imgIr; }
+//    const MatRGB& ir(void) const { return _imgIr; }
+//    const MatRGB& rgb(void) const { return _imgRgb; }
 
 private:
-    openni::Status _status;
-    openni::Device _device;
-    openni::VideoStream _depth;
-    openni::VideoStream _color;
-    openni::VideoStream _ir;
+    openni::Status        _status;
+    openni::Device        _device;
+    openni::VideoStream   _depth;
+    openni::VideoStream   _color;
+    openni::VideoStream   _ir;
     openni::VideoFrameRef _frameDepth;
     openni::VideoFrameRef _frameColor;
     openni::VideoFrameRef _frameIr;
 
     Flag _flags;
-    int _width;
-    int _height;
-    std::vector<float> _z;
-    std::vector<float> _coords;
-    MatRGB _imgRgb;
-    MatRGB _imgIr;
+    unsigned int _width;
+    unsigned int _height;
+//    std::vector<float> _z;
+//    std::vector<float> _coords;
+    double*           _coords;
+    double*           _z;
+    unsigned char*   _rgb;
+    unsigned char*   _ir_image;
+//    MatRGB _imgRgb;
+//    MatRGB _imgIr;
 };
 
 } // end namespace obvious

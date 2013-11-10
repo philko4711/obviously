@@ -21,18 +21,15 @@ CamNano::CamNano()
   : ParentDevice3D(165,120)
 {
    _res = pmdOpen(&_hnd, SOURCE_PLUGIN, SOURCE_PARAM, PROC_PLUGIN, PROC_PARAM);
-   sleep(2);
+   sleep(1);
    if (_res != PMD_OK)
    {
      std::cout << "Error code: " <<_res << std::endl;
      LOGMSG(DBG_ERROR, "Error openning sensor");
+     exit(1);
    }
    else
      LOGMSG(DBG_ERROR, "Opened sensor");
-
-//   char loaded[8];
-//   pmdSourceCommand(&_hnd, loaded, 8, “IsCalibrationDataLoaded”);
-
 
   /*
   * config pmd processing
@@ -68,9 +65,6 @@ CamNano::CamNano()
   _intrinsic    = true;
   _init         = true;
   _debug        = false;
-
-//  _cols = 165;
-//  _rows = 120;
 
   // init of pid controller
   _ctrl.setDebug(_debug);
@@ -125,61 +119,19 @@ void CamNano::setRaw(bool raw)
 bool CamNano::grab()
 {
   // check if sensor initialized
-  if (!_init)
-  {
+  if (!_init) {
     LOGMSG(DBG_ERROR, "Sensor uninitialized");
     pmdClose(_hnd);
     return(false);
   }
 
   this->estimateFrameRate();
-
-  // update sensor
-  _res = pmdUpdate(_hnd);
-  if (_res != PMD_OK)
-  {
-    LOGMSG(DBG_ERROR, "Error updating sensor");
-    pmdClose (_hnd);
-    return(false);
-  }
-
-  _res = pmdGetSourceDataDescription(_hnd, &_dd);
-  if (_res != PMD_OK)
-  {
-    LOGMSG(DBG_ERROR, "Error updating data description");
-    pmdClose (_hnd);
-    return(false);
-  }
-
-  // get array with distances
-  _res = pmdGetDistances(_hnd, _dist, _rows*_cols * sizeof(float));
-  if (_res != PMD_OK)
-  {
-    LOGMSG(DBG_ERROR, "Error getting the distance");
-    pmdClose(_hnd);
-    return(false);
-  }
-
-  // get array with amplitudes from sensor
-  _res = pmdGetAmplitudes(_hnd, _amp, _rows*_cols * sizeof(float));
-  if (_res != PMD_OK)
-  {
-    LOGMSG(DBG_ERROR, "Error getting the amplitudes");
-    pmdClose(_hnd);
-    return(false);
-  }
-
-  // calculate 3d coordinates
-  _res = pmdGet3DCoordinates(_hnd, _coordsF, _rows*_cols * sizeof(float) * 3);
-  if (_res != PMD_OK)
-  {
-    LOGMSG(DBG_ERROR, "Error getting coordinates");
-    pmdClose(_hnd);
-    return(false);
-  }
+  this->updateSensor();
+  this->grabDistance();
+  this->grabAmplitudes();
+  this->grabCoordinates();
 
   _imageF = _amp;
-
   unsigned int maxval = 0;
   unsigned int minval = 10000;
   for (unsigned int i=0; i<_rows*_cols; i++) {
@@ -236,7 +188,7 @@ bool CamNano::grab()
       }
     }
     bool angleFilter = false;
-    if(alpha_max>deg2rad(160.0))
+    if(alpha_max>deg2rad(150.0))
       angleFilter = true;
 
     bool edge = false;
@@ -344,7 +296,6 @@ unsigned char* CamNano::getImage(void) const
      _image[3*i]   = (unsigned char)((_imageF[3*i]   - minMag)/range*255);
      _image[3*i+1] = (unsigned char)((_imageF[3*i+1] - minMag)/range*255);
      _image[3*i+2] = (unsigned char)((_imageF[3*i+2] - minMag)/range*255);
-
   }
   return _image;
 }
@@ -357,10 +308,79 @@ void CamNano::setDebug(bool debug)
   _debug = debug;
 }
 
+
+bool
+CamNano::updateSensor(void)
+{
+  _res = pmdUpdate(_hnd);
+  if (_res != PMD_OK)
+  {
+    LOGMSG(DBG_ERROR, "Error updating sensor");
+    pmdClose (_hnd);
+    return(false);
+  }
+
+  _res = pmdGetSourceDataDescription(_hnd, &_dd);
+  if (_res != PMD_OK)
+  {
+    LOGMSG(DBG_ERROR, "Error updating data description");
+    pmdClose (_hnd);
+    return(false);
+  }
+  return(true);
+}
+
+bool
+CamNano::grabDistance()
+{
+  _res = pmdGetDistances(_hnd, _dist, _rows*_cols * sizeof(float));
+  if (_res != PMD_OK)
+  {
+    LOGMSG(DBG_ERROR, "Error getting the distance");
+    pmdClose(_hnd);
+    return(false);
+  }
+  else
+  {
+    return(true);
+  }
+}
+
+bool
+CamNano::grabAmplitudes()
+{
+  // get array with amplitudes from sensor
+  _res = pmdGetAmplitudes(_hnd, _amp, _rows*_cols * sizeof(float));
+  if (_res != PMD_OK)
+  {
+    LOGMSG(DBG_ERROR, "Error getting the amplitudes");
+    pmdClose(_hnd);
+    return(false);
+  }
+  else
+    return(true);
+}
+
+bool
+CamNano::grabCoordinates(void)
+{
+  // calculate 3d coordinates
+  _res = pmdGet3DCoordinates(_hnd, _coordsF, _rows*_cols * sizeof(float) * 3);
+  if (_res != PMD_OK)
+  {
+    LOGMSG(DBG_ERROR, "Error getting coordinates");
+    pmdClose(_hnd);
+    return(false);
+  }
+  else
+    return(true);
+}
+
 /*
  * Function to set automatic integration time
  */
-void CamNano::setAutoIntegration(void)
+void
+CamNano::setAutoIntegration(void)
 {
   _ctrl.setSetValue(300);
   _intTime = _ctrl.controll(_meanAmp);
@@ -368,4 +388,5 @@ void CamNano::setAutoIntegration(void)
   if (_debug)
     this->showParameters();
 }
+
 

@@ -10,6 +10,11 @@ SET(OBVISION_VERSION_MINOR 1)
 
 INCLUDE_DIRECTORIES(..)
 
+FIND_PACKAGE(VTK REQUIRED)
+INCLUDE(${VTK_USE_FILE})
+
+LINK_LIBRARIES(${VTK_LIBRARIES})
+
 add_library(obvision
 	icp/assign/PairAssignment.cpp
 	icp/assign/AnnPairAssignment.cpp
@@ -38,6 +43,7 @@ add_library(obvision
 	reconstruct/SensorPolar3D.cpp
 	reconstruct/TsdGrid.cpp
 	reconstruct/TsdSpace.cpp
-    reconstruct/RayCastPolar2D.cpp
+  reconstruct/RayCastPolar2D.cpp
 	reconstruct/RayCast3D.cpp
+	reconstruct/TsdSensorFusion.cpp
 	)

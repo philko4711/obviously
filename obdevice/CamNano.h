@@ -132,6 +132,26 @@ private:
    * @param[in] amplitudes  amplitude values of sensor
    */
   void filterPoints(const float* points, const float* distances, const float* amplitudes);
+  /**
+   * Function to update sensor
+   * @return  success
+   */
+  bool updateSensor(void);
+  /**
+   * Function to grab distances from sensor
+   * @return  success
+   */
+  bool grabDistance(void);
+  /**
+   * Function to grab amplitudes
+   * @return  success
+   */
+  bool grabAmplitudes(void);
+  /**
+   * Function to grab coordinates
+   * @return  success
+   */
+  bool grabCoordinates(void);
 
   /**
    * Function to set integration value automatically

@@ -15,6 +15,11 @@ namespace obvious
 
 enum EnumVtkCloudFileFormat { VTKCloud_AUTO = -1, VTKCloud_XML = 0, VTKCloud_PLY = 1/*, VTKCloud_MNI = 2*/ };
 
+enum CloudColors{   RED = 0,
+                    BLUE,
+                    GREEN,
+};
+
 /**
  * VTK point cloud abstraction
  * @author Stefan May

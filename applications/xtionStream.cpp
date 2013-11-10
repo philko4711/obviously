@@ -1,13 +1,14 @@
 #include <iostream>
 #include "obgraphic/Obvious3D.h"
-#include "obdevice/Xtion.h"
+//#include "obdevice/Xtion.h"
+#include "obdevice/OpenNiDevice.h"
 
 using namespace std;
 using namespace obvious;
 
 Obvious3D*        _viewer;
 VtkCloud*         _cloud;
-Xtion*            _xtion;
+OpenNiDevice*      _xtion;
 bool              _pause       = false;
 bool              _showNormals = false;
 
@@ -27,7 +28,7 @@ public:
       if(_xtion->grab())
       {
         _cloud->setCoords(_xtion->getCoords(), _xtion->getCols()*_xtion->getRows(), 3);
-        _cloud->setColors(_xtion->getRGB(),    _xtion->getCols()*_xtion->getRows(), 3);
+        _cloud->setColors(_xtion->getIR(),    _xtion->getCols()*_xtion->getRows(), 3);
         _viewer->update();
       }
     }
@@ -40,11 +41,13 @@ private:
 
 int main(int argc, char* argv[])
 {
-  _xtion      = new Xtion(argv[1]);
-  _cloud      = new VtkCloud();
+//  _xtion      = new Xtion(argv[1]);
+  _xtion      = new OpenNiDevice;
   _viewer     = new Obvious3D("Xtion Stream 3D", 1024, 768, 0, 0);
 
-  _viewer->addCloud(_cloud);
+  std::cout << _xtion->getCols() << "x" << _xtion->getRows() << std::endl;
+
+  _viewer->addCloud(_cloud = new VtkCloud());
 
   vtkSmartPointer<vtkTimerCallback> cb =  vtkSmartPointer<vtkTimerCallback>::New();
   vtkSmartPointer<vtkRenderWindowInteractor> interactor = _viewer->getWindowInteractor();

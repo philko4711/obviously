@@ -10,6 +10,7 @@ namespace obvious
  * @class SensorPolar3DBase
  * @brief generic sensor model class for polar sensing units (to be tested for: Velodyne VLP16 PUCK, Velodyne HDL-32E, ohm_tilt_scanner_3d, SICK LDMRS8, ohm_4d_scanner, Ouster OS0-128, & many more)
  * @brief all polar sensor model classes inherit from this class & implement lookupIndex
+ * @brief this class itself inherits basic sensor modalities from class Sensor 
  * @author Jasmin Ziegler
  */
 class SensorPolar3DBase : public Sensor

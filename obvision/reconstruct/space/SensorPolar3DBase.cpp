@@ -7,6 +7,7 @@ SensorPolar3DBase::SensorPolar3DBase(double inclMin, double inclMax, double incl
 : Sensor(3, maxRange, minRange, lowReflectivityRange)
 {
     unsigned int raysIncl = round(static_cast<unsigned>((abs(inclMin) + abs(inclMax)) / inclRes));
+    unsigned int raysAzim = round(static_cast<unsigned>(2 * M_PI / azimRes));
 
     
     //inherited from class sensor

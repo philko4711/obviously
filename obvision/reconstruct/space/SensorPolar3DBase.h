@@ -33,8 +33,20 @@ SensorPolar3DBase(double inclMin, double inclMax, double inclRes, double azimMin
  */
 virtual ~SensorPolar3DBase();
 
+  /**
+   * Project all coordinates (center of each voxel in tsd space) back to sensor index: which sensor ray comes closest to the coordinate?
+   * @param[in] M matrix of 3D coordinates of all voxel center points in tsd space (homogeneous)
+   * @param[out] indices vector of projection results (must be allocated outside)
+   * @param[in] T temporary transformation matrix of coordinates
+   */
+void backProject(obvious::Matrix* M, int* indices, obvious::Matrix* T = NULL);
 
+private:
+double _azimRes;
+double _inclRes;
 
-} //namespacec obvious
+};
+
+} /*namespace obvious */
 
 #endif /* OBVISION_RECONSTRUCT_SPACE_SENSORPOLAR3DBASE_H_ */

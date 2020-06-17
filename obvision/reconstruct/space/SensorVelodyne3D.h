@@ -74,12 +74,13 @@ public:
   void backProject(obvious::Matrix* M, int* indices, obvious::Matrix* T = NULL);
 
 private:
-  double _azimRes;
-  double _inclRes;
-  int**  _indexMap;
-  /////////////////////////////////////////// DAS HIER  RAUS wird im push initialisiert
-  // int* _indices;
-  //////////////////////////////
+  double       _azimRes;
+  double       _inclRes;
+  unsigned int _raysIncl;
+  double       _inclMin;
+  double       _azimMin;
+  double       _inclSpan;
+  int**        _indexMap;
 };
 
 } /* namespace obvious */

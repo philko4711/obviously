@@ -3,8 +3,295 @@
 #include "obcore/math/mathbase.h"
 #include <limits>
 
-// NEW
+/**
+// NEW - rows and cols switched
+namespace obvious
+{
+SensorVelodyne3D::SensorVelodyne3D(unsigned int raysIncl, double inclMin, double inclRes, double azimRes, double maxRange, double minRange,
+                                   double lowReflectivityRange)
+    : Sensor(3, maxRange, minRange, lowReflectivityRange)
+{
+  _azimRes  = azimRes;                    // 0.2° in RAD
+  _inclRes  = inclRes;                    // 2° in RAD
+  _raysIncl = raysIncl;                   // 16
+  _inclMin  = inclMin;                    //-15° in RAD
+  _inclSpan = _inclRes * (_raysIncl - 1); // CHANGE THIS IN GENERIC MODEL !!!!
+  _azimMin  = 0.0;
 
+  // unsigned int raysAzim = round(static_cast<unsigned>(2 * M_PI / azimRes));
+  unsigned int raysAzim = round(2 * M_PI / azimRes);
+
+  std::cout << "raysAzim HEHEHEHEH = " << raysAzim << std::endl;
+
+  _width  = raysAzim + 1; // weil 0° und 360°
+  _height = raysIncl;     // VORSICHT das ist hier dann 16, würde nicht auch 15 reichen?
+  _size   = _width * _height;
+
+  _data = new double[_size];
+  _mask = new bool[_size];
+  for(unsigned int i = 0; i < _size; i++)
+    _mask[i] = true;
+
+  obvious::System<int>::allocate(_height, _width, _indexMap);
+
+  // set IndexMap - row col switched here
+  unsigned int column = 0;
+  for(unsigned int row = 0; row < _height; row++) // INCL
+  {
+    for(column = 0; column < _width; column++) // AZIM
+    {
+      _indexMap[row][column] = row * (_width) + column;
+      // std::cout << "row = " << row << " , col = " << column << ", indexMap = " << _indexMap[row][column] << std::endl;
+    }
+    column = 0; // iterate over azim rays for each incl ray
+  }
+
+  _rays             = new obvious::Matrix(3, _size);
+  obvious::Matrix R = obvious::Matrix(*_T, 0, 0, 3, 3);
+
+  unsigned int n = 0;
+  // for(unsigned int i = 0; i < _width; i++) // AZIM 0 - 1800 : passt weil 0° und 360° gell?
+  // {
+  //   double currentAzim = _azimMin + i * _azimRes;
+  //   std::cout << "currentAzim = " << rad2deg(currentAzim) << std::endl;
+
+  //   for(unsigned int j = 0; j < _height; j++, n++) // INCL 0 - 15 : passt weil 16 rays
+  //   {
+  //     double currentIncl = _inclMin + j * _inclRes;
+  //     std::cout << "currentIncl = " << rad2deg(currentIncl) << " @ n = " << n << " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+  for(unsigned int i = 0; i < _height; i++) // INCL
+  {
+    double currentIncl = _inclMin + i * _inclRes;
+    // std::cout << "currentIncl = " << rad2deg(currentIncl) << std::endl;
+
+    for(unsigned int j = 0; j < _width; j++, n++) // AZIM
+    {
+      double currentAzim = _azimMin + j * _azimRes;
+      // std::cout << "currentAzim = " << rad2deg(currentAzim) << std::endl;
+      // std::cout << "row i = " << i << " , col j = " << j << ", indexMap = " << _indexMap[i][j] << std::endl;
+      // std::cout << " @ n = " << n << " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+
+      obvious::Matrix calcRay(3, 1);
+
+      // ich muss den inclination angle korrigieren sonst geht dit nit :(((((((((((((((())))))))))))))))
+      double inclCorr = 0.0;
+
+      if(currentIncl <= 0) // DAS GLEICH HAB ICH ERGÄNZT für wenn =0
+      {
+        inclCorr = deg2rad(90.0) + (-1.0 * currentIncl);
+      }
+      else
+      {
+        inclCorr = deg2rad(90.0) - currentIncl;
+      }
+
+      calcRay(0, 0) = sin(inclCorr) * cos(currentAzim);
+      calcRay(1, 0) = cos(inclCorr);
+      calcRay(2, 0) = sin(inclCorr) * sin(currentAzim);
+
+      const double length    = sqrt(calcRay(0, 0) * calcRay(0, 0) + calcRay(1, 0) * calcRay(1, 0) + calcRay(2, 0) * calcRay(2, 0));
+      const double lengthInv = 1.0 / length;
+
+      calcRay = R * calcRay;
+
+      (*_rays)(0, n) = calcRay(0, 0) * lengthInv;
+      (*_rays)(1, n) = calcRay(1, 0) * lengthInv;
+      (*_rays)(2, n) = calcRay(2, 0) * lengthInv;
+    }
+  }
+
+  _raysLocal  = new obvious::Matrix(3, _size);
+  *_raysLocal = *_rays;
+}
+
+SensorVelodyne3D::~SensorVelodyne3D()
+{
+  delete _rays;
+  delete _raysLocal;
+  delete[] _data;
+  delete[] _mask;
+  System<int>::deallocate(_indexMap);
+}
+
+// todo - adapt this for E32 and all other sensors
+// Sensormodel - VLP (old version)
+// unsigned int SensorVelodyne3D::lookupIndex(int indexSensormodel)
+// {
+//   unsigned int indexVelodyneROS = 0;
+//   switch(indexSensormodel)
+//   {
+//   case 0:
+//     indexVelodyneROS = 0;
+//     break;
+//   case 1:
+//     indexVelodyneROS = 2;
+//     break;
+//   case 2:
+//     indexVelodyneROS = 4;
+//     break;
+//   case 3:
+//     indexVelodyneROS = 6;
+//     break;
+//   case 4:
+//     indexVelodyneROS = 8;
+//     break;
+//   case 5:
+//     indexVelodyneROS = 10;
+//     break;
+//   case 6:
+//     indexVelodyneROS = 12;
+//     break;
+//   case 7:
+//     indexVelodyneROS = 14;
+//     break;
+//   case 8:
+//     indexVelodyneROS = 1;
+//     break;
+//   case 9:
+//     indexVelodyneROS = 3;
+//     break;
+//   case 10:
+//     indexVelodyneROS = 5;
+//     break;
+//   case 11:
+//     indexVelodyneROS = 7;
+//     break;
+//   case 12:
+//     indexVelodyneROS = 9;
+//     break;
+//   case 13:
+//     indexVelodyneROS = 11;
+//     break;
+//   case 14:
+//     indexVelodyneROS = 13;
+//     break;
+//   case 15:
+//     indexVelodyneROS = 15;
+//     break;
+//   }
+//   return indexVelodyneROS;
+// }
+
+// VLP-Sensormodel (new version)
+unsigned int SensorVelodyne3D::lookupIndex(int indexSensormodel)
+{
+  unsigned int indexVelodyneROS = 0;
+  switch(indexSensormodel)
+  {
+  case 0:
+    indexVelodyneROS = 0;
+    break;
+  case 1:
+    indexVelodyneROS = 8;
+    break;
+  case 2:
+    indexVelodyneROS = 1;
+    break;
+  case 3:
+    indexVelodyneROS = 6;
+    break;
+  case 4:
+    indexVelodyneROS = 2;
+    break;
+  case 5:
+    indexVelodyneROS = 10;
+    break;
+  case 6:
+    indexVelodyneROS = 3;
+    break;
+  case 7:
+    indexVelodyneROS = 11;
+    break;
+  case 8:
+    indexVelodyneROS = 4;
+    break;
+  case 9:
+    indexVelodyneROS = 12;
+    break;
+  case 10:
+    indexVelodyneROS = 5;
+    break;
+  case 11:
+    indexVelodyneROS = 13;
+    break;
+  case 12:
+    indexVelodyneROS = 6;
+    break;
+  case 13:
+    indexVelodyneROS = 14;
+    break;
+  case 14:
+    indexVelodyneROS = 7;
+    break;
+  case 15:
+    indexVelodyneROS = 15;
+    break;
+  }
+  return indexVelodyneROS;
+}
+
+// M sind die Koordinaten des TSD SPACES! von allen VOXELN die Mittelpunkte!
+void SensorVelodyne3D::backProject(obvious::Matrix* M, int* indices, obvious::Matrix* T)
+{
+  obvious::Matrix PoseInv = getTransformation();
+  PoseInv.invert();
+  if(T)
+    PoseInv *= *T;
+
+  // multiply PoseInv with M where poseInv is not transposed but M is transposed
+  // (true)
+  obvious::Matrix coords3D = obvious::Matrix::multiply(PoseInv, *M, false, true);
+
+  for(unsigned int i = 0; i < M->getRows(); i++)
+  {
+    double x = coords3D(0, i);
+    double y = coords3D(1, i);
+    double z = coords3D(2, i);
+
+    double r                = sqrt(x * x + y * y + z * z);
+    double inclinationAngle = acos(y / r);
+
+    // ich glaub die verzerrung liegt am atan - pls check JA ES MUSS DARAN LIEGEN PLS HALP ME!!!!!!!!!!!
+    double azimuthAngle = atan2(z, x);
+    if(azimuthAngle < 0.0)
+      azimuthAngle += 2 * M_PI;
+
+    unsigned int azimIndex  = 0;
+    unsigned int inclIndex  = 0;
+    unsigned int inclMapped = 0;
+    unsigned int indexCheck = 0;
+
+    if((inclinationAngle < deg2rad(75.0)) || (inclinationAngle > deg2rad(105.0))) // ACHTUNG FOR GENERIC MODEL: HIER MIT INCLSPAN RECHNEN
+    {
+      indices[i] = -1;
+      continue;
+    }
+    else
+    {
+      // std::cout << "from valid non -1 indices from backProject: inclinationAngle = " << rad2deg(inclinationAngle)
+      //           << " , azimuthAngle = " << rad2deg(azimuthAngle) << std::endl;
+      // calculate azimuth = col && inclination = row & returnRayIndex
+      azimIndex  = round(azimuthAngle / _azimRes);
+      inclIndex  = round(abs(((inclinationAngle - M_PI / 2) - _inclSpan + abs(_inclMin))) / _inclRes);
+      inclMapped = lookupIndex(inclIndex);
+
+      // von oben: _indexMap[row][column] = row * (_width) + column
+      indexCheck = inclMapped * _width + azimIndex;
+      // std::cout << "indexCheck = " << indexCheck << std::endl;
+      // push current value of indexMap[row][column] into int* indices which backProject() will return to push()
+      indices[i] = _indexMap[inclMapped][azimIndex];
+
+      std::cout << "inclIndex = " << inclIndex << ", inclMapped = " << inclMapped << ", azimIndex = " << azimIndex
+                << " -- _indexMap[inclMapped][azimIndex] = " << _indexMap[inclMapped][azimIndex] << std::endl;
+    }
+  }
+}
+
+} // namespace obvious
+**/
+
+// another save before switch rows and cols
+/**
 namespace obvious
 {
 SensorVelodyne3D::SensorVelodyne3D(unsigned int raysIncl, double inclMin, double inclRes, double azimRes, double maxRange, double minRange,
@@ -100,6 +387,65 @@ SensorVelodyne3D::~SensorVelodyne3D()
 }
 
 // todo - adapt this for E32 and all other sensors
+// OLD VERSION
+// unsigned int SensorVelodyne3D::lookupIndex(int indexSensormodel)
+// {
+//   unsigned int indexVelodyneROS = 0;
+//   switch(indexSensormodel)
+//   {
+//   case 0:
+//     indexVelodyneROS = 0;
+//     break;
+//   case 1:
+//     indexVelodyneROS = 2;
+//     break;
+//   case 2:
+//     indexVelodyneROS = 4;
+//     break;
+//   case 3:
+//     indexVelodyneROS = 6;
+//     break;
+//   case 4:
+//     indexVelodyneROS = 8;
+//     break;
+//   case 5:
+//     indexVelodyneROS = 10;
+//     break;
+//   case 6:
+//     indexVelodyneROS = 12;
+//     break;
+//   case 7:
+//     indexVelodyneROS = 14;
+//     break;
+//   case 8:
+//     indexVelodyneROS = 1;
+//     break;
+//   case 9:
+//     indexVelodyneROS = 3;
+//     break;
+//   case 10:
+//     indexVelodyneROS = 5;
+//     break;
+//   case 11:
+//     indexVelodyneROS = 7;
+//     break;
+//   case 12:
+//     indexVelodyneROS = 9;
+//     break;
+//   case 13:
+//     indexVelodyneROS = 11;
+//     break;
+//   case 14:
+//     indexVelodyneROS = 13;
+//     break;
+//   case 15:
+//     indexVelodyneROS = 15;
+//     break;
+//   }
+//   return indexVelodyneROS;
+// }
+
+// VLP-Sensormodel (new version)
 unsigned int SensorVelodyne3D::lookupIndex(int indexSensormodel)
 {
   unsigned int indexVelodyneROS = 0;
@@ -109,46 +455,46 @@ unsigned int SensorVelodyne3D::lookupIndex(int indexSensormodel)
     indexVelodyneROS = 0;
     break;
   case 1:
-    indexVelodyneROS = 2;
+    indexVelodyneROS = 8;
     break;
   case 2:
-    indexVelodyneROS = 4;
+    indexVelodyneROS = 1;
     break;
   case 3:
     indexVelodyneROS = 6;
     break;
   case 4:
-    indexVelodyneROS = 8;
+    indexVelodyneROS = 2;
     break;
   case 5:
     indexVelodyneROS = 10;
     break;
   case 6:
-    indexVelodyneROS = 12;
+    indexVelodyneROS = 3;
     break;
   case 7:
-    indexVelodyneROS = 14;
+    indexVelodyneROS = 11;
     break;
   case 8:
-    indexVelodyneROS = 1;
+    indexVelodyneROS = 4;
     break;
   case 9:
-    indexVelodyneROS = 3;
+    indexVelodyneROS = 12;
     break;
   case 10:
     indexVelodyneROS = 5;
     break;
   case 11:
-    indexVelodyneROS = 7;
+    indexVelodyneROS = 13;
     break;
   case 12:
-    indexVelodyneROS = 9;
+    indexVelodyneROS = 6;
     break;
   case 13:
-    indexVelodyneROS = 11;
+    indexVelodyneROS = 14;
     break;
   case 14:
-    indexVelodyneROS = 13;
+    indexVelodyneROS = 7;
     break;
   case 15:
     indexVelodyneROS = 15;
@@ -213,9 +559,10 @@ void SensorVelodyne3D::backProject(obvious::Matrix* M, int* indices, obvious::Ma
 }
 
 } // namespace obvious
+**/
 
 // OLD SAVE
-/**
+
 namespace obvious
 {
 // my constructor
@@ -510,4 +857,4 @@ void SensorVelodyne3D::backProject(obvious::Matrix* M, int* indices, obvious::Ma
   }
 }
 } // namespace obvious
-**/ //OLD SAVE
+  //** / // OLD SAVE

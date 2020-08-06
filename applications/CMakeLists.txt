@@ -102,6 +102,8 @@ LINK_DIRECTORIES(/opt/ros/electric/stacks/perception_pcl/flann/lib64/
 #ADD_EXECUTABLE(astar_test                 astar_test.cpp)
 #ADD_EXECUTABLE(statemachine_test          statemachine_test.cpp)
 #ADD_EXECUTABLE(ransac_cirle               ransac_circle.cpp)
+ADD_EXECUTABLE(juicy_test                  juicy_test.cpp)
+ADD_EXECUTABLE(juicy_test2                  juicy_test2.cpp)
 
 #SET_TARGET_PROPERTIES(tsd_kinect PROPERTIES COMPILE_FLAGS "-Wno-unknown-pragmas -Wno-reorder")
 #ADD_EXECUTABLE(tsd_raycast_visualize      tsd_raycast_visualize.cpp)
@@ -138,4 +140,7 @@ LINK_DIRECTORIES(/opt/ros/electric/stacks/perception_pcl/flann/lib64/
 #TARGET_LINK_LIBRARIES(astar_test               ${VISIONLIBS}  ${CORELIBS})
 #TARGET_LINK_LIBRARIES(statemachine_test        ${VISIONLIBS}  ${CORELIBS})
 #TARGET_LINK_LIBRARIES(ransac_cirle             ${VISIONLIBS}  ${CORELIBS})
+TARGET_LINK_LIBRARIES(juicy_test    ${VISIONLIBS}  ${GRAPHICLIBS} ${CORELIBS})
+TARGET_LINK_LIBRARIES(juicy_test2    ${VISIONLIBS}  ${GRAPHICLIBS} ${CORELIBS})
+
 

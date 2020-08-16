@@ -77,6 +77,8 @@ private:
   double _azimRes;
   double _inclRes;
   int**  _indexMap;
+  double _inclSpan;
+  double _inclNegSpan;
   /////////////////////////////////////////// DAS HIER  RAUS wird im push initialisiert
   // int* _indices;
   //////////////////////////////

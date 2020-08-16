@@ -12,6 +12,8 @@ SensorVelodyne3D::SensorVelodyne3D(unsigned int raysIncl, double inclMin, double
 {
   _azimRes                  = azimRes;
   _inclRes                  = inclRes;
+  _inclSpan                 = _inclRes * (raysIncl - 1);
+  _inclNegSpan              = abs(inclMin);
   unsigned int raysAzim     = 0;
   double       azimAngle    = 0.0;
   const double resetInclMin = inclMin; // to reset variable inclMin each time
@@ -36,7 +38,7 @@ SensorVelodyne3D::SensorVelodyne3D(unsigned int raysIncl, double inclMin, double
   _data = new double[_size];
   _mask = new bool[_size];
   for(unsigned int i = 0; i < _size; i++)
-    _mask[i]         = true;
+    _mask[i] = true;
 
   // evtl mit _height u _width ersetzen
   obvious::System<int>::allocate(_width, _height, _indexMap);
@@ -246,9 +248,13 @@ void SensorVelodyne3D::backProject(obvious::Matrix* M, int* indices, obvious::Ma
     double z = coords3D(2, i);
 
     returnAngles(x, y, z, &inclAngle, &azimAngle);
+    // shift inclAngle here before idx calculations!
+    double inclShifted = inclAngle + _inclNegSpan;
 
     // leave current loop if incl angle out of measurement area -15° --> +15.0°
-    if((inclAngle < deg2rad(-15.0)) || (inclAngle > deg2rad(15.0)))
+    // if((inclAngle < deg2rad(-15.0)) || (inclAngle > deg2rad(15.0)))
+    // change this from 0° - 30° because of shift
+    if((inclAngle < deg2rad(0.0)) || (inclAngle > deg2rad(30.0)))
     {
       indices[i] = -1;
       continue;
@@ -257,7 +263,10 @@ void SensorVelodyne3D::backProject(obvious::Matrix* M, int* indices, obvious::Ma
     {
       // 1: calculate incoming azimuth = ROW index of indexMap
       // 2: calculate incoming inclination = COLUMN of indexMap
-      returnRayIndex(azimAngle, inclAngle, &row, &column);
+      // returnRayIndex(azimAngle, inclAngle, &row, &column);
+
+      unsigned int azimIndex = round(azimAngle / _azimRes);
+      unsigned int inclIndex = round(inclShifted / _inclRes);
 
       // ROW CORRECTED weil row= azimindex max zb 359,9 / 0.2 = 1799 == 1800 --> index 1799 weil 0 anfängt? ist das richtig?
       // 0 / 0.2 = 0
@@ -268,13 +277,14 @@ void SensorVelodyne3D::backProject(obvious::Matrix* M, int* indices, obvious::Ma
 
       // map column from sensor model to Velodyne firing sequence (order of
       // vertical rays differs between sensormodel and velodyne ros input)
-      columnMapped = lookupIndex(column);
+      columnMapped = lookupIndex(inclIndex);
 
       // probe: index ausrechnen
-      idxCheck = columnMapped + 16 * row;
+      // idxCheck = columnMapped + 16 * row;
+      idxCheck = columnMapped + azimIndex * 16;
 
       // push current value of current indexMap[row][column] into int* indices (returned by backProject to push())
-      indices[i] = _indexMap[row][columnMapped];
+      indices[i] = _indexMap[azimIndex][inclIndex];
     }
   }
 }

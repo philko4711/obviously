@@ -63,7 +63,7 @@ public:
    * @todo make this function abstract in parent class so each velodyne sensor inheriting from it has to implement it since it may differ from sensor to
    * sensor
    */
-  unsigned int lookupIndex(int indexSensormodel);
+  int lookupIndex(int indexSensormodel);
 
   /**
    * Project all coordinates (center of each voxel in tsd space) back to sensor index: which sensor ray comes closest to the coordinate?

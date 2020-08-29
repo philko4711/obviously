@@ -106,7 +106,7 @@ ADD_EXECUTABLE(juicy_test                  juicy_test.cpp)
 ADD_EXECUTABLE(juicy_test2                  juicy_test2.cpp)
 
 #SET_TARGET_PROPERTIES(tsd_kinect PROPERTIES COMPILE_FLAGS "-Wno-unknown-pragmas -Wno-reorder")
-#ADD_EXECUTABLE(tsd_raycast_visualize      tsd_raycast_visualize.cpp)
+ADD_EXECUTABLE(tsd_raycast_visualize      tsd_raycast_visualize.cpp)
 #ADD_EXECUTABLE(showCloud                  showCloud.cpp)
 
 
@@ -134,7 +134,7 @@ ADD_EXECUTABLE(juicy_test2                  juicy_test2.cpp)
 #TARGET_LINK_LIBRARIES(tsd_test                 ${VISIONLIBS}  ${GRAPHICLIBS} ${CORELIBS})
 #TARGET_LINK_LIBRARIES(tsd_grid_test            ${VISIONLIBS}  ${GRAPHICLIBS} ${CORELIBS})
 #TARGET_LINK_LIBRARIES(tsd_kinect               ${VISIONLIBS}  ${DEVICELIBS}  ${GRAPHICLIBS} ${CORELIBS} ${XML_LIBRARIES})
-#TARGET_LINK_LIBRARIES(tsd_raycast_visualize    ${VISIONLIBS}  ${GRAPHICLIBS} ${CORELIBS})
+TARGET_LINK_LIBRARIES(tsd_raycast_visualize    ${VISIONLIBS}  ${GRAPHICLIBS} ${CORELIBS})
 #TARGET_LINK_LIBRARIES(tsd_testMineShaft        ${VISIONLIBS}  ${GRAPHICLIBS} ${CORELIBS})
 #TARGET_LINK_LIBRARIES(showCloud                ${GRAPHICLIBS} ${CORELIBS})
 #TARGET_LINK_LIBRARIES(astar_test               ${VISIONLIBS}  ${CORELIBS})

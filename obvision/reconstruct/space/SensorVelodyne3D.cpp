@@ -22,11 +22,6 @@ SensorVelodyne3D::SensorVelodyne3D(unsigned int raysIncl, double inclMin, double
 
   raysAzim = round(static_cast<unsigned>(2 * M_PI / azimRes));
 
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /// PLEASE LET SOMEONE CHECK IF THE AZIM+1 THING IS CORRECT! DO I REALLY HAVE 361 values FOR AZIMUT? yes right?
-  /// +1 bei allocate _indexMap und bei _width
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
   // inherited from class sensor
   // Size of first dimension, i.e., # of samples of a 2D scan or width of image
   _width = raysAzim + 1;
@@ -166,9 +161,9 @@ void SensorVelodyne3D::setIndexMap(unsigned int width, unsigned int height)
 }
 
 // todo - adapt this for E32
-unsigned int SensorVelodyne3D::lookupIndex(int indexSensormodel)
+int SensorVelodyne3D::lookupIndex(int indexSensormodel)
 {
-  unsigned int indexVelodyneROS = 0;
+  int indexVelodyneROS = 0;
   switch(indexSensormodel)
   {
   case 0:
@@ -238,8 +233,8 @@ void SensorVelodyne3D::backProject(obvious::Matrix* M, int* indices, obvious::Ma
   double       azimAngle    = 0.0;
   unsigned int row          = 0;
   unsigned int column       = 0;
-  unsigned int columnMapped = 0;
-  unsigned int idxCheck     = 0;
+  int          columnMapped = 0;
+  int          idxCheck     = 0;
 
   for(unsigned int i = 0; i < M->getRows(); i++)
   {
@@ -249,12 +244,13 @@ void SensorVelodyne3D::backProject(obvious::Matrix* M, int* indices, obvious::Ma
 
     returnAngles(x, y, z, &inclAngle, &azimAngle);
     // shift inclAngle here before idx calculations!
-    double inclShifted = inclAngle + _inclNegSpan;
+
+    // double inclShifted = inclAngle + _inclNegSpan; REMOVED
 
     // leave current loop if incl angle out of measurement area -15° --> +15.0°
-    // if((inclAngle < deg2rad(-15.0)) || (inclAngle > deg2rad(15.0)))
+    if((inclAngle < deg2rad(-15.0)) || (inclAngle > deg2rad(15.0)))
     // change this from 0° - 30° because of shift
-    if((inclAngle < deg2rad(0.0)) || (inclAngle > deg2rad(30.0)))
+    // if((inclShifted < deg2rad(0.0)) || (inclShifted > deg2rad(30.0))) REMOVED
     {
       indices[i] = -1;
       continue;
@@ -265,8 +261,10 @@ void SensorVelodyne3D::backProject(obvious::Matrix* M, int* indices, obvious::Ma
       // 2: calculate incoming inclination = COLUMN of indexMap
       // returnRayIndex(azimAngle, inclAngle, &row, &column);
 
-      unsigned int azimIndex = round(azimAngle / _azimRes);
-      unsigned int inclIndex = round(inclShifted / _inclRes);
+      // int azimIndex = round(azimAngle / _azimRes); REMOVED
+      // int inclIndex = round(inclShifted / _inclRes); REMOVED
+
+      returnRayIndex(azimAngle, inclAngle, &row, &column);
 
       // ROW CORRECTED weil row= azimindex max zb 359,9 / 0.2 = 1799 == 1800 --> index 1799 weil 0 anfängt? ist das richtig?
       // 0 / 0.2 = 0
@@ -277,14 +275,22 @@ void SensorVelodyne3D::backProject(obvious::Matrix* M, int* indices, obvious::Ma
 
       // map column from sensor model to Velodyne firing sequence (order of
       // vertical rays differs between sensormodel and velodyne ros input)
-      columnMapped = lookupIndex(inclIndex);
+
+      // test ohne lookupIndex mit inclIndex direkt --> BEI KÜNSTLICHEN DATEN, DIE ICH SCHON SORTIERT HABE, OHNE LOOKUP!!
+      // columnMapped = lookupIndex(inclIndex); REMOVED
+
+      // ACHTUNG METHODE RAUSNEHMEN WEIL MEINE KÜNSTLICHEN DATEN KOMMEN JA SHCON RICHTIG SORTIERT!!
+      // columnMapped = lookupIndex(column);
 
       // probe: index ausrechnen
-      // idxCheck = columnMapped + 16 * row;
-      idxCheck = columnMapped + azimIndex * 16;
+      idxCheck = columnMapped + 16 * row;
+      // idxCheck = columnMapped + azimIndex * 16; REMOVED
 
       // push current value of current indexMap[row][column] into int* indices (returned by backProject to push())
-      indices[i] = _indexMap[azimIndex][inclIndex];
+      // indices[i] = _indexMap[azimIndex][inclIndex];
+      // indices[i] = _indexMap[azimIndex][columnMapped]; REMOVED
+      // indices[i] = _indexMap[row][columnMapped];
+      indices[i] = _indexMap[row][column];
     }
   }
 }

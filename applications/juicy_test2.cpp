@@ -124,9 +124,8 @@ int main(void)
   unsigned int raysAzim     = static_cast<unsigned>(2 * M_PI / _azimRes);
 
   unsigned int width  = raysAzim + 1; // weil 0° und 360°
-  unsigned int height = _raysIncl;    // HEIGHT IST FALSCH! DAS MUSS JETZT INLCSPAN SEIN
-
-  unsigned int size = width * height;
+  unsigned int height = _raysIncl;
+  unsigned int size   = width * height;
 
   // unsigned int totalRays = (azimuthRays * verticalRays) - 1;	//Anzahl der totalRays -1 weil Zählung bei 0 beginnt
 

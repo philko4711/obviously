@@ -157,7 +157,7 @@ int SensorVelodyne3DNew::lookupIndex(int inclIndex)
     indexVelodyneROS = 15;
     break;
   }
-  return inclIndex;
+  return indexVelodyneROS;
 }
 
 // M sind die Koordinaten des TSD SPACES! von allen VOXELN die Mittelpunkte!
@@ -210,7 +210,7 @@ void SensorVelodyne3DNew::backProject(obvious::Matrix* M, int* indices, obvious:
       double inclShifted = inclAngle + _inclNegSpan; // shifts all inclAngles upwards with +15°, so span from -15° to 15° is now shifted from 0° to 30°
       // std::cout << "inclShifted = " << rad2deg(inclShifted) << std::endl;
       int azimIndex = round(azimAngle / _azimRes);
-      // std::cout << "azimIndex = " << azimIndex << std::endl;
+      std::cout << "azimIndex = " << azimIndex << std::endl;
 
       // ohne LOOKUP
       // int inclIndex = round(inclShifted / _inclRes);
@@ -222,9 +222,14 @@ void SensorVelodyne3DNew::backProject(obvious::Matrix* M, int* indices, obvious:
       // // std::cout << "indices[i] = " << indices[i] << std::endl;
 
       // mit LOOKUP
-      int inclIndex   = round(static_cast<int>(inclShifted / _inclRes));
+      int inclIndex = round(static_cast<int>(inclShifted / _inclRes));
+      std::cout << "inclIndex = " << inclIndex << std::endl;
+
       lookupInclIndex = lookupIndex(inclIndex);
-      indices[i]      = _indexMap[azimIndex][lookupInclIndex];
+      std::cout << "lookupInclIndex = " << lookupInclIndex << std::endl;
+
+      indices[i] = _indexMap[azimIndex][lookupInclIndex];
+      std::cout << "_indexMap[azimIndex][lookupInclIndex] = " << _indexMap[azimIndex][lookupInclIndex] << std::endl;
     }
   }
 }

@@ -213,23 +213,23 @@ void SensorVelodyne3DNew::backProject(obvious::Matrix* M, int* indices, obvious:
       std::cout << "azimIndex = " << azimIndex << std::endl;
 
       // ohne LOOKUP
-      // int inclIndex = round(inclShifted / _inclRes);
-      // // std::cout << "inclIndex = " << inclIndex << std::endl;
-      // int idxCheck = azimIndex * _height + inclIndex; // height = raysIncl
-      // // std::cout << "idxCheck = " << idxCheck << std::endl;
-      // indices[i] = _indexMap[azimIndex][inclIndex];
-      // // std::cout << "_indexMap[azimIndex][inclIndex] = " << _indexMap[azimIndex][inclIndex] << std::endl;
-      // // std::cout << "indices[i] = " << indices[i] << std::endl;
+      int inclIndex = round(inclShifted / _inclRes);
+      // std::cout << "inclIndex = " << inclIndex << std::endl;
+      int idxCheck = azimIndex * _height + inclIndex; // height = raysIncl
+      // std::cout << "idxCheck = " << idxCheck << std::endl;
+      indices[i] = _indexMap[azimIndex][inclIndex];
+      // std::cout << "_indexMap[azimIndex][inclIndex] = " << _indexMap[azimIndex][inclIndex] << std::endl;
+      // std::cout << "indices[i] = " << indices[i] << std::endl;
 
-      // mit LOOKUP
-      int inclIndex = round(static_cast<int>(inclShifted / _inclRes));
-      std::cout << "inclIndex = " << inclIndex << std::endl;
+      // // mit LOOKUP
+      // int inclIndex = round(static_cast<int>(inclShifted / _inclRes));
+      // std::cout << "inclIndex = " << inclIndex << std::endl;
 
-      lookupInclIndex = lookupIndex(inclIndex);
-      std::cout << "lookupInclIndex = " << lookupInclIndex << std::endl;
+      // lookupInclIndex = lookupIndex(inclIndex);
+      // std::cout << "lookupInclIndex = " << lookupInclIndex << std::endl;
 
-      indices[i] = _indexMap[azimIndex][lookupInclIndex];
-      std::cout << "_indexMap[azimIndex][lookupInclIndex] = " << _indexMap[azimIndex][lookupInclIndex] << std::endl;
+      // indices[i] = _indexMap[azimIndex][lookupInclIndex];
+      // std::cout << "_indexMap[azimIndex][lookupInclIndex] = " << _indexMap[azimIndex][lookupInclIndex] << std::endl;
     }
   }
 }

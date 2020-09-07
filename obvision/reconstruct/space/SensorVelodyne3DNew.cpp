@@ -223,13 +223,13 @@ void SensorVelodyne3DNew::backProject(obvious::Matrix* M, int* indices, obvious:
 
       // // mit LOOKUP
       // int inclIndex = round(static_cast<int>(inclShifted / _inclRes));
-      // std::cout << "inclIndex = " << inclIndex << std::endl;
+      // // std::cout << "inclIndex = " << inclIndex << std::endl;
 
       // lookupInclIndex = lookupIndex(inclIndex);
-      // std::cout << "lookupInclIndex = " << lookupInclIndex << std::endl;
+      // // std::cout << "lookupInclIndex = " << lookupInclIndex << std::endl;
 
       // indices[i] = _indexMap[azimIndex][lookupInclIndex];
-      // std::cout << "_indexMap[azimIndex][lookupInclIndex] = " << _indexMap[azimIndex][lookupInclIndex] << std::endl;
+      // // std::cout << "_indexMap[azimIndex][lookupInclIndex] = " << _indexMap[azimIndex][lookupInclIndex] << std::endl;
     }
   }
 }

@@ -11,13 +11,13 @@ SensorVelodyne3DNew::SensorVelodyne3DNew(unsigned int raysIncl, double inclMin, 
 {
   _inclRes                  = inclRes;
   _inclMin                  = inclMin;
-  _inclSpan                 = static_cast<double>(_inclRes * (raysIncl - 1)); // todo CHECK FOR OTHER MODELS
+  _inclSpan                 = _inclRes * (static_cast<double>(raysIncl) - 1); // todo CHECK FOR OTHER MODELS
   _inclNegSpan              = abs(inclMin);
   _azimRes                  = azimRes;
   _azimMin                  = azimMin;
   const double resetInclMin = inclMin; // to reset variable inclMin each time
 
-  int raysAzim = round(static_cast<int>(2 * M_PI / _azimRes));
+  int raysAzim = static_cast<int>(round(2 * M_PI / _azimRes));
 
   // from Sensor
   _width  = static_cast<unsigned>(raysAzim + 1); // check +1 here
@@ -61,11 +61,11 @@ SensorVelodyne3DNew::SensorVelodyne3DNew(unsigned int raysIncl, double inclMin, 
       // hier muss ich die inclination Winkel in thetaSphzere jetzt umrechnen, weil ich meinen Fächer ja von -15° bis +15° aufbaue und die Kugelkoord. theta
       // von der z-Achse runter auf die x-y-Ebene definieren
       // if(currentIncl <= 0)
-      if(inclMin <= 0)
+      if(inclMin < 0.0)
 
       {
         // thetaSphere = piHalf + currentIncl * (-1);
-        thetaSphere = piHalf + inclMin * (-1);
+        thetaSphere = piHalf + inclMin * (-1.0);
       }
       else
       {
@@ -156,6 +156,9 @@ int SensorVelodyne3DNew::lookupIndex(int inclIndex)
   case 15:
     indexVelodyneROS = 15;
     break;
+  default:
+    std::cout << " index not valid - aborting." << std::endl;
+    std::abort();
   }
   return indexVelodyneROS;
 }
@@ -179,6 +182,7 @@ void SensorVelodyne3DNew::backProject(obvious::Matrix* M, int* indices, obvious:
     double lengthInv = 1.0 / length; // hilft das f. Perform.?
 
     double theta = acos(coords3D(2, i) * lengthInv);
+    // std::cout << "theta = " << rad2deg(theta) << std::endl;
 
     // theta in inclAngle umwandeln vor Indexberechnung
     if(theta >= deg2rad(90.0))
@@ -196,20 +200,15 @@ void SensorVelodyne3DNew::backProject(obvious::Matrix* M, int* indices, obvious:
     // ohne das krieg ihc negative Winkel
     if(azimAngle < 0)
     {
-      azimAngle += 2 * M_PI; // express angles positively in 3rd and 4th quadrant bec atan2 expresses them negatively
+      azimAngle += 2.0 * M_PI; // express angles positively in 3rd and 4th quadrant bec atan2 expresses them negatively
     }
 
-    // das macht Chef in SenroPolar 3D --> nimmt andere koords
-    // double azimAngle = atan2(coords3D(2, i), coords3D(0, i)) - M_PI;
-    // if(azimAngle > M_PI)
-    //   azimAngle -= M_PI;
-    // if(azimAngle < -M_PI)
-    //   azimAngle += M_PI;
-
     // leave current loop if inclAngle out of vertical aperture/measurement area between -15° and +15°; set current index = -1 (invalid)
+    // if((inclAngle < deg2rad(-15.0)) || (inclAngle > deg2rad(15.0)))
     if((inclAngle < deg2rad(-15.0)) || (inclAngle > deg2rad(15.0)))
     {
       indices[i] = -1;
+      // std::cout << "MINUS OOOOOOOOOOOOOOOOOOOOOOOOONE inclAngle = " << rad2deg(inclAngle) << std::endl;
       continue;
     }
     else
@@ -217,20 +216,20 @@ void SensorVelodyne3DNew::backProject(obvious::Matrix* M, int* indices, obvious:
       // shift inclAngle to positive 1st quadrant before index calculations so its easier to calculate indices with resolution vals
       double inclShifted = inclAngle + _inclNegSpan; // shifts all inclAngles upwards with +15°, so span from -15° to 15° is now shifted from 0° to 30°
       // std::cout << "inclShifted = " << rad2deg(inclShifted) << std::endl;
-      int azimIndex = round(azimAngle / _azimRes);
+      int azimIndex = static_cast<int>(round(azimAngle / _azimRes));
       // std::cout << "azimIndex = " << azimIndex << std::endl;
 
       // ohne LOOKUP
-      int inclIndex = round(inclShifted / _inclRes);
+      int inclIndex = static_cast<int>(round(inclShifted / _inclRes));
       // std::cout << "inclIndex = " << inclIndex << std::endl;
-      int idxCheck = azimIndex * _height + inclIndex; // height = raysIncl
+      int idxCheck = azimIndex * static_cast<int>(_height) + inclIndex; // height = raysIncl
       // std::cout << "idxCheck = " << idxCheck << std::endl;
       indices[i] = _indexMap[azimIndex][inclIndex];
       // std::cout << "_indexMap[azimIndex][inclIndex] = " << _indexMap[azimIndex][inclIndex] << std::endl;
       // std::cout << "indices[i] = " << indices[i] << std::endl;
 
       // // mit LOOKUP
-      // int inclIndex = round(static_cast<int>(inclShifted / _inclRes));
+      // int inclIndex = static_cast<int>(round(inclShifted / _inclRes));
       // // std::cout << "inclIndex = " << inclIndex << std::endl;
 
       // lookupInclIndex = lookupIndex(inclIndex);
@@ -238,6 +237,21 @@ void SensorVelodyne3DNew::backProject(obvious::Matrix* M, int* indices, obvious:
 
       // indices[i] = _indexMap[azimIndex][lookupInclIndex];
       // // std::cout << "_indexMap[azimIndex][lookupInclIndex] = " << _indexMap[azimIndex][lookupInclIndex] << std::endl;
+
+      // check all vals between 130 and 128 deg for the_azimuth test
+      if(azimIndex == 675)
+      // if((deg2rad(134.8) < azimAngle) && (azimAngle < deg2rad(136.0)) && (length < 1.5) && (length > 1.3))
+      {
+        std::cout << "angle of interest! azimAngle = " << rad2deg(azimAngle) << " , length = " << length << std::endl;
+        std::cout << "azimIndex = " << azimIndex << std::endl;
+
+        std::cout << "inclAngle = " << rad2deg(inclAngle) << std::endl;
+        std::cout << "inclShifted = " << rad2deg(inclShifted) << std::endl;
+        std::cout << "inclIndex = " << inclIndex << std::endl;
+        std::cout << "idxCheck = " << idxCheck << std::endl;
+        std::cout << "_indexMap[azimIndex][inclIndex] = " << _indexMap[azimIndex][inclIndex] << std::endl;
+        std::cout << "indices[i] = " << indices[i] << std::endl;
+      }
     }
   }
 }

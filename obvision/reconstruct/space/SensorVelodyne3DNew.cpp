@@ -193,10 +193,18 @@ void SensorVelodyne3DNew::backProject(obvious::Matrix* M, int* indices, obvious:
     // std::cout << "inclAngle = " << rad2deg(inclAngle) << std::endl;
 
     double azimAngle = atan2(coords3D(1, i), coords3D(0, i));
+    // ohne das krieg ihc negative Winkel
     if(azimAngle < 0)
     {
       azimAngle += 2 * M_PI; // express angles positively in 3rd and 4th quadrant bec atan2 expresses them negatively
     }
+
+    // das macht Chef in SenroPolar 3D --> nimmt andere koords
+    // double azimAngle = atan2(coords3D(2, i), coords3D(0, i)) - M_PI;
+    // if(azimAngle > M_PI)
+    //   azimAngle -= M_PI;
+    // if(azimAngle < -M_PI)
+    //   azimAngle += M_PI;
 
     // leave current loop if inclAngle out of vertical aperture/measurement area between -15° and +15°; set current index = -1 (invalid)
     if((inclAngle < deg2rad(-15.0)) || (inclAngle > deg2rad(15.0)))

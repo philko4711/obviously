@@ -20,7 +20,9 @@ SensorVelodyne3DNew::SensorVelodyne3DNew(unsigned int raysIncl, double inclMin, 
   int raysAzim = static_cast<int>(round(2 * M_PI / _azimRes));
 
   // from Sensor
-  _width  = static_cast<unsigned>(raysAzim + 1); // check +1 here
+  // _width  = static_cast<unsigned>(raysAzim + 1); // check +1 here
+  _width = static_cast<unsigned>(raysAzim);
+
   _height = static_cast<unsigned>(raysIncl);
   _size   = _width * _height;
 
@@ -216,11 +218,17 @@ void SensorVelodyne3DNew::backProject(obvious::Matrix* M, int* indices, obvious:
       // shift inclAngle to positive 1st quadrant before index calculations so its easier to calculate indices with resolution vals
       double inclShifted = inclAngle + _inclNegSpan; // shifts all inclAngles upwards with +15°, so span from -15° to 15° is now shifted from 0° to 30°
       // std::cout << "inclShifted = " << rad2deg(inclShifted) << std::endl;
-      int azimIndex = static_cast<int>(round(azimAngle / _azimRes));
+      // int azimIndex = static_cast<int>(round(azimAngle / _azimRes));
+      // FLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOR
+      int azimIndex = static_cast<int>(floor(azimAngle / _azimRes));
+
       // std::cout << "azimIndex = " << azimIndex << std::endl;
 
       // ohne LOOKUP
-      int inclIndex = static_cast<int>(round(inclShifted / _inclRes));
+      // int inclIndex = static_cast<int>(round(inclShifted / _inclRes));
+      // FLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOR
+      int inclIndex = static_cast<int>(floor(inclShifted / _inclRes));
+
       // std::cout << "inclIndex = " << inclIndex << std::endl;
       int idxCheck = azimIndex * static_cast<int>(_height) + inclIndex; // height = raysIncl
       // std::cout << "idxCheck = " << idxCheck << std::endl;
@@ -229,7 +237,7 @@ void SensorVelodyne3DNew::backProject(obvious::Matrix* M, int* indices, obvious:
       // std::cout << "indices[i] = " << indices[i] << std::endl;
 
       // // mit LOOKUP
-      // int inclIndex = static_cast<int>(round(inclShifted / _inclRes));
+      // int inclIndex = static_cast<int>(floor(inclShifted / _inclRes));
       // // std::cout << "inclIndex = " << inclIndex << std::endl;
 
       // lookupInclIndex = lookupIndex(inclIndex);

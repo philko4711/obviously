@@ -107,6 +107,7 @@ ADD_EXECUTABLE(juicy_test2                  juicy_test2.cpp)
 
 #SET_TARGET_PROPERTIES(tsd_kinect PROPERTIES COMPILE_FLAGS "-Wno-unknown-pragmas -Wno-reorder")
 ADD_EXECUTABLE(tsd_raycast_visualize      tsd_raycast_visualize.cpp)
+add_executable(tsd_sensor_test tsd_sensor_test.cpp)
 #ADD_EXECUTABLE(showCloud                  showCloud.cpp)
 
 
@@ -142,6 +143,7 @@ TARGET_LINK_LIBRARIES(tsd_raycast_visualize    ${VISIONLIBS}  ${GRAPHICLIBS} ${C
 #TARGET_LINK_LIBRARIES(ransac_cirle             ${VISIONLIBS}  ${CORELIBS})
 TARGET_LINK_LIBRARIES(juicy_test    ${VISIONLIBS}  ${GRAPHICLIBS} ${CORELIBS})
 TARGET_LINK_LIBRARIES(juicy_test2    ${VISIONLIBS}  ${GRAPHICLIBS} ${CORELIBS})
+TARGET_LINK_LIBRARIES(tsd_sensor_test    ${VISIONLIBS}  ${GRAPHICLIBS} ${CORELIBS} gomp)
 
 
 

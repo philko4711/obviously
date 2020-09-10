@@ -37,7 +37,7 @@ int main(int argc, char** argv)
   double       inclRes  = obvious::deg2rad(2.0);
   double       azimMin  = obvious::deg2rad(0.0);
   double       azimMax  = obvious::deg2rad(359.8);
-  double       azimRes  = obvious::deg2rad(0.2); // CAREFUL this should be 0.2, just 4 debugging
+  double       azimRes  = obvious::deg2rad(0.2);
   _sensor               = new obvious::SensorVelodyne3DNew(raysIncl, inclMin, inclMax, inclRes, azimMin, azimMax, azimRes);
 
   _sensor->setTransformation(_Tinit);
@@ -49,15 +49,15 @@ int main(int argc, char** argv)
 
   std::cout << __PRETTY_FUNCTION__ << " nAz " << nAzimutz << " nIncl " << nIncl << std::endl;
   std::cout << __PRETTY_FUNCTION__ << " sensor az" << _sensor->getWidth() << " nIncl " << _sensor->getHeight() << std::endl;
-  const unsigned int size      = _sensor->getWidth() * _sensor->getHeight() * 3;
-  double*            coords    = new double[size];
+  const unsigned int size   = _sensor->getWidth() * _sensor->getHeight() * 3;
+  double*            coords = new double[size];
 
-  //create synthetic data
-  //unsigned int       ctr       = circles(coords, azimMin, azimMax, azimRes, inclMin, inclMax, inclRes);
-unsigned int       ctr       = spiral(coords, azimMin, azimMax, azimRes, inclMin, inclMax, inclRes, 1.0, 0.005);
+  // create synthetic data
+  unsigned int ctr = circles(coords, azimMin, azimMax, azimRes, inclMin, inclMax, inclRes);
+  // unsigned int       ctr       = spiral(coords, azimMin, azimMax, azimRes, inclMin, inclMax, inclRes, 1.0, 0.005);
 
-  double*            depthData = new double[size / 3];
-  bool*              mask      = new bool[size / 3];
+  double* depthData = new double[size / 3];
+  bool*   mask      = new bool[size / 3];
   for(unsigned int i = 0; i < size / 3; i++)
   {
     Eigen::Vector3d vec(coords[i * 3], coords[i * 3 + 1], coords[i * 3 + 2]);
@@ -90,18 +90,8 @@ void redBlueRenderSpace(obvious::VtkCloud& cloud)
   static unsigned int seq = 0;
   struct Color
   {
-    Color(uint8_t r, uint8_t g, uint8_t b)
-        : r(r)
-        , g(g)
-        , b(b)
-    {
-    }
-    Color()
-        : r(0)
-        , g(0)
-        , b(0)
-    {
-    }
+    Color(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b(b) {}
+    Color() : r(0), g(0), b(0) {}
     void    red(uint8_t val) { r = val; }
     void    blue(uint8_t val) { b = val; }
     uint8_t r;
@@ -210,8 +200,8 @@ unsigned int circles(double* coords, const double azimMin, const double azimMax,
 unsigned int spiral(double* coords, const double azimMin, const double azimMax, const double azimRes, const double inclMin, const double inclMax,
                     const double inclRes, const double absBase, const double absDiff)
 {
-  unsigned int ctr     = 0;
-  double       r       = absBase;
+  unsigned int ctr = 0;
+  double       r   = absBase;
   for(double azim = azimMin; azim < azimMax; azim += azimRes, r += absDiff)
   {
     for(double incl = inclMin; incl < inclMax + inclRes; incl += inclRes, ctr++)

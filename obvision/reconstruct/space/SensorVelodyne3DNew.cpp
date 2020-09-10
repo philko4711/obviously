@@ -21,7 +21,7 @@ SensorVelodyne3DNew::SensorVelodyne3DNew(unsigned int raysIncl, double inclMin, 
 
   // from Sensor
   // _width  = static_cast<unsigned>(raysAzim + 1); // check +1 here
-  _width = static_cast<unsigned>(raysAzim);
+  _width = static_cast<unsigned>(raysAzim); // doch nochmal -1? weil 360°=0°?
 
   _height = static_cast<unsigned>(raysIncl);
   _size   = _width * _height;
@@ -46,8 +46,6 @@ SensorVelodyne3DNew::SensorVelodyne3DNew(unsigned int raysIncl, double inclMin, 
 
   unsigned int n           = 0;
   double       currentAzim = 0.0;
-  // double       currentIncl = _inclMin;
-  // double currentIncl = 0.0;
 
   for(unsigned int i = 0; i < _width; i++)
   {
@@ -55,8 +53,6 @@ SensorVelodyne3DNew::SensorVelodyne3DNew(unsigned int raysIncl, double inclMin, 
 
     for(unsigned int j = 0; j < _height; j++, n++)
     {
-      // currentIncl = _inclMin + j * _inclRes;
-
       Matrix       calcRay(3, 1);
       double       thetaSphere = 0.0;
       const double piHalf      = deg2rad(90.0);
@@ -198,12 +194,14 @@ void SensorVelodyne3DNew::backProject(obvious::Matrix* M, int* indices, obvious:
 
     // std::cout << "inclAngle = " << rad2deg(inclAngle) << std::endl;
 
-    double azimAngle = atan2(coords3D(1, i), coords3D(0, i));
-    // ohne das krieg ihc negative Winkel
-    if(azimAngle < 0)
-    {
-      azimAngle += 2.0 * M_PI; // express angles positively in 3rd and 4th quadrant bec atan2 expresses them negatively
-    }
+    // FALSCH! alle +pi
+    double azimAngle = atan2(coords3D(1, i), coords3D(0, i)) + M_PI;
+    // double azimAngle = atan2(coords3D(1, i), coords3D(0, i));
+    // // ohne das krieg ihc negative Winkel -- aber nicht eher alle um 2 PI verschieben= sonst hab ich nur von 0...pi
+    // if(azimAngle < 0)
+    // {
+    //   azimAngle += 2.0 * M_PI; // express angles positively in 3rd and 4th quadrant bec atan2 expresses them negatively
+    // }
 
     // leave current loop if inclAngle out of vertical aperture/measurement area between -15° and +15°; set current index = -1 (invalid)
     // if((inclAngle < deg2rad(-15.0)) || (inclAngle > deg2rad(15.0)))
@@ -251,6 +249,7 @@ void SensorVelodyne3DNew::backProject(obvious::Matrix* M, int* indices, obvious:
       // if((deg2rad(134.8) < azimAngle) && (azimAngle < deg2rad(136.0)) && (length < 1.5) && (length > 1.3))
       {
         std::cout << "angle of interest! azimAngle = " << rad2deg(azimAngle) << " , length = " << length << std::endl;
+        // problem warum length nicht gleich unserer length aus den synth daten entspricht: partitionen. offset im space der jeweiligen partition
         std::cout << "azimIndex = " << azimIndex << std::endl;
 
         std::cout << "inclAngle = " << rad2deg(inclAngle) << std::endl;

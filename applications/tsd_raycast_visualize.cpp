@@ -15,7 +15,6 @@
 #include "obvision/reconstruct/space/RayCast3D.h"
 #include "obvision/reconstruct/space/SensorPolar3D.h"
 #include "obvision/reconstruct/space/SensorProjective3D.h"
-#include "obvision/reconstruct/space/SensorVelodyne3D.h"
 #include "obvision/reconstruct/space/SensorVelodyne3DNew.h"
 
 using namespace obvious;

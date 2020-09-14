@@ -65,7 +65,7 @@ int VelodynePUCKVLP16::lookupIndex(int inclIndex)
     indexVelodyneROS = 15;
     break;
   default:
-    std::cout << " index not valid - aborting." << std::endl;
+    std::cout << __PRETTY_FUNCTION__ << " index not valid - aborting." << std::endl;
     std::abort();
   }
   return indexVelodyneROS;

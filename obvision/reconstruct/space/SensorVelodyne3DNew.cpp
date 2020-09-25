@@ -9,10 +9,10 @@ SensorVelodyne3DNew::SensorVelodyne3DNew(unsigned int raysIncl, double inclMin, 
                                          double azimRes, double maxRange, double minRange, double lowReflectivityRange)
     : Sensor(3, maxRange, minRange, lowReflectivityRange)
 {
-  _inclRes                  = inclRes;
-  _inclMin                  = inclMin;
-  _inclMax                  = inclMax;
-  _inclSpan                 = _inclRes * (static_cast<double>(raysIncl) - 1); // todo CHECK FOR OTHER MODELS
+  _inclRes = inclRes;
+  _inclMin = inclMin;
+  _inclMax = inclMax;
+  // _inclSpan                 = _inclRes * (static_cast<double>(raysIncl) - 1); // todo CHECK FOR OTHER MODELS
   _inclNegSpan              = abs(inclMin);
   _azimRes                  = azimRes;
   _azimMin                  = azimMin;

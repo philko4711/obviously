@@ -20,7 +20,7 @@ private:
   double _inclRes;
   double _inclMin;
   double _inclMax;
-  double _inclSpan;
+  // double _inclSpan;
   double _inclNegSpan;
   double _azimRes;
   double _azimMin;

@@ -4,7 +4,7 @@ namespace obvious
 {
 
 VelodynePUCKVLP16::VelodynePUCKVLP16(unsigned int raysIncl, double inclMin, double inclMax, double inclRes, double azimMin, double azimMax, double azimRes)
-    : SensorPolar3DBase(raysIncl, inclMin, inclMax, inclRes, azimMin, azimMax, azimRes)
+    : SensorPolar(raysIncl, inclMin, inclMax, inclRes, azimMin, azimMax, azimRes)
 {
   std::cout << __PRETTY_FUNCTION__ << "Hi." << std::endl;
 }

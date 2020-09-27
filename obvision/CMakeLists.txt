@@ -59,9 +59,10 @@ add_library(obvision STATIC
 	reconstruct/space/SensorProjective3D.cpp
 	reconstruct/space/SensorPolar3D.cpp
 	reconstruct/space/SensorVelodyne3DNew.cpp
-	reconstruct/space/SensorPolar3DBase.cpp
-	reconstruct/space/polar_models/VelodynePUCKVLP16.cpp
-	reconstruct/space/polar_models/VelodyneHDL32E.cpp
+	reconstruct/space/SensorPolar.cpp
+	reconstruct/space/polar_sensormodels/VelodynePUCKVLP16.cpp
+	reconstruct/space/polar_sensormodels/VelodyneHDL32E.cpp
+	reconstruct/space/polar_sensormodels/OusterOS0.cpp
     reconstruct/space/SensorPolar2DWith3DPose.cpp
 	reconstruct/space/TsdSpace.cpp
 	reconstruct/space/TsdSpaceComponent.cpp

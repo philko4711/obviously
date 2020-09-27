@@ -1,4 +1,4 @@
-#include "SensorPolar3DBase.h"
+#include "SensorPolar.h"
 #include "obcore/base/System.h"
 #include "obcore/math/mathbase.h"
 #include <limits>
@@ -6,14 +6,13 @@
 namespace obvious
 {
 
-SensorPolar3DBase::SensorPolar3DBase(unsigned int raysIncl, double inclMin, double inclMax, double inclRes, double azimMin, double azimMax, double azimRes,
-                                     double maxRange, double minRange, double lowReflectivityRange)
+SensorPolar::SensorPolar(unsigned int raysIncl, double inclMin, double inclMax, double inclRes, double azimMin, double azimMax, double azimRes,
+                         double maxRange, double minRange, double lowReflectivityRange)
     : Sensor(3, maxRange, minRange, lowReflectivityRange)
 {
   _inclRes                  = inclRes;
   _inclMin                  = inclMin;
   _inclMax                  = inclMax;
-  _inclSpan                 = _inclRes * (static_cast<double>(raysIncl) - 1); // @todo CHECK FOR OTHER MODELS
   _inclNegSpan              = abs(inclMin);
   _azimRes                  = azimRes;
   _azimMin                  = azimMin;
@@ -88,7 +87,7 @@ SensorPolar3DBase::SensorPolar3DBase(unsigned int raysIncl, double inclMin, doub
   *_raysLocal = *_rays;
 }
 
-SensorPolar3DBase::~SensorPolar3DBase()
+SensorPolar::~SensorPolar()
 {
   delete[] _data;
   delete[] _mask;
@@ -97,7 +96,7 @@ SensorPolar3DBase::~SensorPolar3DBase()
   delete _raysLocal;
 }
 
-void SensorPolar3DBase::backProject(obvious::Matrix* M, int* indices, obvious::Matrix* T)
+void SensorPolar::backProject(obvious::Matrix* M, int* indices, obvious::Matrix* T)
 {
   Matrix PoseInv = getTransformation();
   PoseInv.invert();

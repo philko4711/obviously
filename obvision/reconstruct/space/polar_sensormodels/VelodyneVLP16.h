@@ -3,7 +3,7 @@
 namespace obvious
 {
 
-class VelodynePUCKVLP16 : public SensorPolar
+class VelodyneVLP16 : public SensorPolar
 {
 public:
   /**
@@ -19,12 +19,12 @@ public:
    * note: since the firing sequence (scan order) of the VLP16 does not increment evenly from inclMin to inclMax in inclRes steps, the lookupIndex method is
    * necessary to match the scan order to the raycast order
    */
-  VelodynePUCKVLP16(unsigned int raysIncl, double inclMin, double inclMax, double inclRes, double azimMin, double azimMax, double azimRes);
+  VelodyneVLP16(unsigned int raysIncl, double inclMin, double inclMax, double inclRes, double azimMin, double azimMax, double azimRes);
 
   /**
    * Destructor
    */
-  virtual ~VelodynePUCKVLP16();
+  virtual ~VelodyneVLP16();
 
   /**
    * lookupIndex

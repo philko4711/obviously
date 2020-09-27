@@ -1,17 +1,17 @@
-#include "VelodynePUCKVLP16.h"
+#include "VelodyneVLP16.h"
 
 namespace obvious
 {
 
-VelodynePUCKVLP16::VelodynePUCKVLP16(unsigned int raysIncl, double inclMin, double inclMax, double inclRes, double azimMin, double azimMax, double azimRes)
+VelodyneVLP16::VelodyneVLP16(unsigned int raysIncl, double inclMin, double inclMax, double inclRes, double azimMin, double azimMax, double azimRes)
     : SensorPolar(raysIncl, inclMin, inclMax, inclRes, azimMin, azimMax, azimRes)
 {
   std::cout << __PRETTY_FUNCTION__ << "Hi." << std::endl;
 }
 
-VelodynePUCKVLP16::~VelodynePUCKVLP16() {}
+VelodyneVLP16::~VelodyneVLP16() {}
 
-int VelodynePUCKVLP16::lookupIndex(int inclIndex)
+int VelodyneVLP16::lookupIndex(int inclIndex)
 {
   int indexVelodyneROS = 0;
   switch(inclIndex)

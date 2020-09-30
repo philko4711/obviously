@@ -11,11 +11,4 @@ Tilt3d::Tilt3d(unsigned int raysIncl, double inclMin, double inclMax, double inc
 
 Tilt3d::~Tilt3d() {}
 
-int Tilt3d::lookupIndex(int inclIndex)
-{
-//not necessary!
-}
-  return indexVelodyneROS;
-}
-
 } // namespace obvious

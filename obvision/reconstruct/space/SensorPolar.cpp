@@ -6,7 +6,7 @@
 namespace obvious
 {
 
-SensorPolar::SensorPolar(unsigned int raysIncl, double inclMin, double inclMax, double inclRes, double azimMin, double azimMax, double azimRes,
+SensorPolar::SensorPolar(unsigned int raysIncl, double inclMin, double inclMax, double inclRes, double azimMin, double azimMax, double azimRes, std::vector<int> firingSeq,
                          double maxRange, double minRange, double lowReflectivityRange)
     : Sensor(3, maxRange, minRange, lowReflectivityRange)
 {
@@ -17,6 +17,7 @@ SensorPolar::SensorPolar(unsigned int raysIncl, double inclMin, double inclMax, 
   _azimRes                  = azimRes;
   _azimMin                  = azimMin;
   const double resetInclMin = inclMin;
+  _firingSeq                = firingSeq;
 
   int raysAzim = static_cast<int>(round(2 * M_PI / _azimRes));
 
@@ -94,6 +95,113 @@ SensorPolar::~SensorPolar()
   System<int>::deallocate(_indexMap);
   delete _rays;
   delete _raysLocal;
+}
+
+int SensorPolar::lookupIndex(int inclIndex)
+{
+  int inclMatch = 0;
+  switch(inclIndex)
+  {
+    case 0: 
+      inclMatch = _firingSeq[0];
+      break;
+    case 1:
+      inclMatch = _firingSeq[1];
+      break;
+    case 2:
+      inclMatch = _firingSeq[2];
+      break;
+    case 3:
+      inclMatch = _firingSeq[3];
+      break;
+    case 4:
+      inclMatch = _firingSeq[4];
+      break;
+    case 5:
+      inclMatch = _firingSeq[5];
+      break;
+    case 6:
+      inclMatch = _firingSeq[6];
+      break;
+    case 7:
+      inclMatch = _firingSeq[7];
+      break;
+    case 8:
+      inclMatch = _firingSeq[8];
+      break;
+    case 9:
+      inclMatch = _firingSeq[9];
+      break;
+    case 10:
+      inclMatch = _firingSeq[10];
+    case 11:
+      inclMatch = _firingSeq[11];
+      break;
+    case 12:
+      inclMatch = _firingSeq[12];
+      break;
+    case 13:
+      inclMatch = _firingSeq[13];
+      break;
+    case 14:
+      inclMatch = _firingSeq[14];
+      break;
+    case 15:
+      inclMatch = _firingSeq[15];
+      break;
+    case 16:
+      inclMatch = _firingSeq[16];
+      break;
+    case 17:
+      inclMatch = _firingSeq[17];
+      break;
+    case 18:
+      inclMatch = _firingSeq[18];
+      break; 
+    case 19:
+      inclMatch = _firingSeq[19];
+      break;
+    case 20:
+      inclMatch = _firingSeq[20];
+      break; 
+    case 21:
+      inclMatch = _firingSeq[21];
+      break; 
+    case 22:
+      inclMatch = _firingSeq[22];
+      break; 
+    case 23:
+      inclMatch = _firingSeq[23];
+      break;
+    case 24:
+      inclMatch = _firingSeq[24];
+      break;
+    case 25:
+      inclMatch = _firingSeq[25];
+      break; 
+    case 26:
+      inclMatch = _firingSeq[26];
+      break;
+    case 27:
+      inclMatch = _firingSeq[27];
+      break; 
+    case 28:
+      inclMatch = _firingSeq[28];
+      break; 
+    case 29:
+      inclMatch = _firingSeq[29];
+      break; 
+    case 30:
+      inclMatch = _firingSeq[30];
+      break; 
+    case 31:
+      inclMatch = _firingSeq[31];
+      break; 
+    default: 
+      std::cout << __PRETTY_FUNCTION__ << " index not valid - aborting." << std::endl;
+      std::abort();
+  }
+  return inclMatch;
 }
 
 void SensorPolar::backProject(obvious::Matrix* M, int* indices, obvious::Matrix* T)

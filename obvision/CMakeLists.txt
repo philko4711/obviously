@@ -63,6 +63,7 @@ add_library(obvision STATIC
 	reconstruct/space/polar_sensormodels/VelodyneVLP16.cpp
 	reconstruct/space/polar_sensormodels/VelodyneHDL32E.cpp
 	reconstruct/space/polar_sensormodels/OusterOS0.cpp
+	reconstruct/space/polar_sensormodels/Tilt3d.cpp
     reconstruct/space/SensorPolar2DWith3DPose.cpp
 	reconstruct/space/TsdSpace.cpp
 	reconstruct/space/TsdSpaceComponent.cpp

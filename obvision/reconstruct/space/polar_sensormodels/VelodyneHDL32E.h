@@ -16,29 +16,18 @@ public:
    * @param[in] azimMax highest azimuth angle in RAD (6.28319 = 360°)
    * @param[in] azimRes resolution of azimuth rays in RAD (0.002897 = 0.166°), angle between two horizontal rays in 360° plane, depending on rotation speed
    * (RPM) of sensor, default RPM = 600 --> azimRes = 0.166° (300RPM --> 0.083°, 900RPM --> 0.249°, 1200RPM --> 0.332°)
+   * @param[in] firingSeq order in which vertical lasers are fired (see SensorPolar class Constructor+lookupIndex methods for more details), is by default empty. If not empty, it will trigger a call to lookupIndex in function backProject() of C SensorPolar
+   * firingSeq for Velodyne HDL-32E: firingSeq={0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30,  1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31}; (check HDL-32E User Manual p. 62ff)
    * note: since the firing sequence (scan order) of the HDL-32E does not increment evenly from inclMin to inclMax in inclRes steps, the lookupIndex method
    * is necessary to match the scan order to the raycast order
    */
-  VelodyneHDL32E(unsigned int raysIncl, double inclMin, double inclMax, double inclRes, double azimMin, double azimMax, double azimRes);
+  VelodyneHDL32E(unsigned int raysIncl, double inclMin, double inclMax, double inclRes, double azimMin, double azimMax, double azimRes, std::vector<int> firingSeq);
 
   /**
    * Destructor
    */
   virtual ~VelodyneHDL32E();
 
-  /**
-   * lookupIndex
-   * @param[in] inclIndex calculated in terms of sensormodel, i.e. SensorPolar builds up the Raycast and _indexMap for each azimuth angle from the lowest
-   * inclination angle (inclMin) up to the highest inclination angle (inclMax), in resolution (inclRes) steps
-   * @return indexCorrected returns the corresponding inclination index of the real sensor data, taking into account its firing sequence
-   * This function matches the firing sequence of real sensor data to _indexMap. This generic model builds the _indexMap for each azimuth starting from the
-   * lowest inclination value and incrementing +inclRes until inclMax is reached. Then the current azimuth is incremented +azimRes & the said is repeated for
-   * all azimuths in the plane The real sensor data might come in a differnt order though! I.e. in the case of the Velodyne PUCK VLP16, the firing sequence
-   * "lists lasers in the order they are fired. Though the VLP-16's lasers are organized in a single, vertical column, they are not fired from one end to the
-   * other. Instead, the firing sequence "hops around." This is to avoid "cross-talk" or interference." (see VLP-16 User Manual, page 54ff) Firing sequence
-   * for Velodyne HDL-32E: see HDL-32E User Manual, page 62ff
-   */
-  int lookupIndex(int inclIndex);
 };
 
 } // namespace obvious

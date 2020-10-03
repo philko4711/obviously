@@ -100,6 +100,8 @@ SensorPolar::~SensorPolar()
 int SensorPolar::lookupIndex(int inclIndex)
 {
   int inclMatch = 0;
+  if(_firingSeq.size() == 32)
+  {
   switch(inclIndex)
   {
     case 0: 
@@ -201,6 +203,69 @@ int SensorPolar::lookupIndex(int inclIndex)
       std::cout << __PRETTY_FUNCTION__ << " index not valid - aborting." << std::endl;
       std::abort();
   }
+}
+else if(_firingSeq.size() == 16)
+{
+    switch(inclIndex)
+  {
+    case 0: 
+      inclMatch = _firingSeq[0];
+      break;
+    case 1:
+      inclMatch = _firingSeq[1];
+      break;
+    case 2:
+      inclMatch = _firingSeq[2];
+      break;
+    case 3:
+      inclMatch = _firingSeq[3];
+      break;
+    case 4:
+      inclMatch = _firingSeq[4];
+      break;
+    case 5:
+      inclMatch = _firingSeq[5];
+      break;
+    case 6:
+      inclMatch = _firingSeq[6];
+      break;
+    case 7:
+      inclMatch = _firingSeq[7];
+      break;
+    case 8:
+      inclMatch = _firingSeq[8];
+      break;
+    case 9:
+      inclMatch = _firingSeq[9];
+      break;
+    case 10:
+      inclMatch = _firingSeq[10];
+    case 11:
+      inclMatch = _firingSeq[11];
+      break;
+    case 12:
+      inclMatch = _firingSeq[12];
+      break;
+    case 13:
+      inclMatch = _firingSeq[13];
+      break;
+    case 14:
+      inclMatch = _firingSeq[14];
+      break;
+    case 15:
+      inclMatch = _firingSeq[15];
+      break;
+    default: 
+      std::cout << __PRETTY_FUNCTION__ << " index not valid - aborting." << std::endl;
+      std::abort();
+  }
+}
+else
+{
+  std::cout << __PRETTY_FUNCTION__ << "size of _firingSeq is not valid. Must contain either 16 rays for VLP16 or 32 rays for HDL-32E. Wanna integrate a new sensor? pls update this function if the firing sequence hops around. aborting." << std::endl;
+  std::abort();
+}
+
   return inclMatch;
 }
 
@@ -248,16 +313,21 @@ void SensorPolar::backProject(obvious::Matrix* M, int* indices, obvious::Matrix*
       double inclShifted = inclAngle + _inclNegSpan;
       int    azimIndex   = static_cast<int>(floor(azimAngle / _azimRes));
 
-      // ohne LOOKUPINDEX --> testdata
+      // ohne LOOKUPINDEX --> testdata zb
+    if(_firingSeq.empty())
+      {
       int inclIndex = static_cast<int>(floor(inclShifted / _inclRes));
       int idxCheck  = azimIndex * static_cast<int>(_height) + inclIndex;
       indices[i]    = _indexMap[azimIndex][inclIndex];
+      }
+    else
+      {
+      // mit LOOKUP --> realdata
+      int inclIndex = static_cast<int>(floor(inclShifted / _inclRes));
+      lookupInclIndex = lookupIndex(inclIndex);
+      indices[i] = _indexMap[azimIndex][lookupInclIndex];
+      }
 
-      /** mit LOOKUP --> realdata
-      // int inclIndex = static_cast<int>(floor(inclShifted / _inclRes));
-      // lookupInclIndex = lookupIndex(inclIndex);
-      // indices[i] = _indexMap[azimIndex][lookupInclIndex];
-      **/
     }
   }
 }

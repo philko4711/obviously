@@ -23,7 +23,7 @@ public:
    * 900RPM --> 0.3°, 1200RPM --> 0.4°)
    * @param[in] firingSeq order in which vertical lasers are fired (see SensorPolar class Constructor+lookupIndex methods for more details), is by default empty. If not empty, it will trigger a call to lookupIndex in function backProject() of C SensorPolar
    * firingSeq for Velodyne: firingSeq={0, 2, 4, 6, 8, 10, 12, 14, 1, 3, 5, 7, 9, 11, 13, 15}; (check VLP16 User Manual p. 54ff)
-   * note: since the firing sequence (scan order) of the VLP16 does not
+   * @note: since the firing sequence (scan order) of the VLP16 does not
    * increment evenly from inclMin to inclMax in inclRes steps, the lookupIndex
    * method is
    * necessary to match the scan order to the raycast order

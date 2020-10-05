@@ -13,6 +13,8 @@ FIND_PACKAGE(VTK REQUIRED)
 INCLUDE(${VTK_USE_FILE})
 PKG_CHECK_MODULES(XML libxml++-2.6)
 
+add_compile_options(-std=c++11)
+
 INCLUDE_DIRECTORIES(/usr/include/openni2
                     /usr/include/ni
 					/usr/include/openni

@@ -75,6 +75,7 @@ private:
   double _azimRes;
   double _azimMin;
   double _azimMax;
+  double _azimNegSpan;
   std::vector<int> _firingSeq;
   int **_indexMap;
 };

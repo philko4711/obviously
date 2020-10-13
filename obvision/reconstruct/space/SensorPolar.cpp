@@ -21,9 +21,8 @@ SensorPolar::SensorPolar(unsigned int raysIncl, double inclMin, double inclMax, 
   const double resetInclMin = inclMin;
   _firingSeq                = firingSeq;
 
-  double azimRange = abs(azimMin - azimMax);
-  int    raysAzim  = static_cast<int>(round(azimRange / _azimRes));
-  // int raysAzim = static_cast<int>(round(2 * M_PI / _azimRes));
+  _azimRange = abs(azimMin - azimMax);
+  int    raysAzim  = static_cast<int>(round(_azimRange / _azimRes));
 
   // inherited from Sensor
   _width  = static_cast<unsigned>(raysAzim);
@@ -39,29 +38,27 @@ SensorPolar::SensorPolar(unsigned int raysIncl, double inclMin, double inclMax, 
   for(unsigned int i = 0; i < _size; i++)
     _mask[i] = true;
 
-  // set index map
-  obvious::System<int>::allocate(_width, _height, _indexMap);
-
   //indexmap wenn kein Vollwinkel (tilt3d zb)
-  if(azimRange < (2.0*M_PI))    //krieg ich hier probleme wg. rundungen?
+  if(_azimRange < (2.0*M_PI))    
   {
-    std::cout << __PRETTY_FUNCTION__ << "kein Vollwinkel :-)))))))))))))" << std::endl;
-    //kein Vollwinkel, daher keine indexmap von 0° - 360°. Für Indexberechnugn werden in backProject neg. Azims nach oben geschoben, also Start bei 0° ist ok, aber +PI machen wie beim atan2 später
-    unsigned int startAzimIdx = static_cast<unsigned>(floor(M_PI / _azimRes));  //in bsp: 180° / 1° = 180
-    unsigned int endAzimIdx = static_cast<unsigned>(floor(azimRange + M_PI));   //in bsp: 270° + 180° = 450°
+    obvious::System<int>::allocate(_width, _height, _indexMap);   
 
-    for(startAzimIdx; startAzimIdx < endAzimIdx; startAzimIdx++)  //Azimvals von 180°-450°
+    unsigned int startAzimIdx = 0;
+    unsigned int endAzimIdx = static_cast<unsigned>(round(_azimRange));
+
+    for(startAzimIdx; startAzimIdx < endAzimIdx; startAzimIdx++)  //Azimvals von 0-270°
     {
       for(unsigned int column = 0; column < _height; column++)
       {
         _indexMap[startAzimIdx][column] = startAzimIdx * _height + column;
+
       }
     }
   }
 
   else    //indexMap Vollwinkel
+  obvious::System<int>::allocate(_width, _height, _indexMap);
   {
-    std::cout << __PRETTY_FUNCTION__ << "EIN voller Vollwinkel :-)))))))))))))" << std::endl;
   for(unsigned int row = 0; row < _width; row++) // AZIM
   {
     for(unsigned int column = 0; column < _height; column++) // INCL
@@ -342,7 +339,6 @@ void SensorPolar::backProject(obvious::Matrix* M, int* indices, obvious::Matrix*
       // shift inclAngle to positive 1st quadrant before index calculations so
       // its easier to calculate indices with resolution vals
       double inclShifted = inclAngle + _inclNegSpan;
-      double azimShifted = azimAngle + _azimNegSpan;
     
     // throw out invalid indices that are out of both inclination and azimuth field of view of sensor
     // leave current loop if inclAngle out of vertical aperture/measurement area
@@ -353,18 +349,25 @@ void SensorPolar::backProject(obvious::Matrix* M, int* indices, obvious::Matrix*
       continue;
     }
 
-    //DAMIT HAU ICH AUCH GÜLTIGE WERTE RAUS
-    // else if((azimAngle < (_azimMin + M_PI)) || (azimAngle > (_azimMax + M_PI))) //+PI here as well for boundaries!!
-    // {
-    //   indices[i] = -1;
-    //   continue;
-    // }
+    else if((azimAngle < (_azimMin + M_PI)) || (azimAngle > (_azimMax + M_PI))) //+PI here as well for boundaries!!
+    {
+      indices[i] = -1;
+      continue;
+    }
 
     else
     {
+      int    azimIndex = 0;
+      if(_azimRange < (2*M_PI)) //wenn nicht Vollwinkel
+      {
+        azimIndex   = static_cast<int>(floor( (azimAngle - (_azimMin + M_PI)  ) / _azimRes));
+      }
+      else  //wenn vollwinkel
+      {    
+        azimIndex   = static_cast<int>(floor(azimAngle / _azimRes)); // todo add azimuth bounds for non 360° scanners and set index -1
+      }
 
-      // int    azimIndex   = static_cast<int>(floor(azimAngle / _azimRes)); // todo add azimuth bounds for non 360° scanners and set index -1
-      int    azimIndex   = static_cast<int>(floor(azimShifted / _azimRes));
+
       // ohne LOOKUPINDEX --> testdata zb
       if(_firingSeq.empty())
       {
